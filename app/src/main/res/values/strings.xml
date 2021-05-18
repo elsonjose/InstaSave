@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">InstaSave</string>
+    <string name="standard_whatsapp_package">com.whatsapp</string>
+    <string name="business_whatsap_package">com.whatsapp.w4b</string>
+    <string name="gb_whatsap_package">com.gbwhatsapp</string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
+    <string name="title_activity_video_view">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_status_view">FullscreenActivity</string>
+    <string name="no_notifications">Not receiving notifications about statuses.<font color='#2196F3'> Learn why.</font></string>
+    <string name="sys_theme_policy">Following system theme policy.<font color='#2196F3'> Learn more.</font></string>
+
+    <string name="insta_no_saved_post_info">No Saved Content<font color='#2196F3' size="16">\nCopy or share link to InstaSave to download</font></string>
+
+    <string name="share_to"><b>Share to...</b></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="previous">Go back</string>
+</resources>

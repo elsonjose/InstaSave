@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="whatsapp_green_dark">#1976D2</color>
+    <color name="whatsapp_green">#2196F3</color>
+    <color name="lightGreen">#90CAF9</color>
+    <color name="darkPrimaryDark">#FF000000</color>
+    <color name="lightSettingsHeaderBackgroundColor">#E7E7E7</color>
+    <color name="colorIcon">#C6C6C6</color>
+    <color name="colorBackground">#F1F1F1</color>
+    <color name="darkSettingsHeaderBackgroundColor">#383838</color>
+    <color name="darNavBackgroundColor">#727272</color>
+    <color name="darkDialogBackground">#1c1c1c</color>
+    <color name="colorDialogBackground">#ffffff</color>
+    <color name="mediumImportanceTextColor">#4B4B4B</color>
+    <color name="lowImportanceTextColor">#727272</color>
+    <color name="darkMediumImportanceTextColor">#B1B1B1</color>
+    <color name="darkLowImportanceTextColor">#D8D8D8</color>
+    <color name="darkPrimary">#2B2B2B</color>
+    <color name="darkNavHeaderColor">#1e1e1e</color>
+    <color name="darkBackground">#121212</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#F73737</color>
+    <color name="blackOverlay">#66000000</color>
+    <color name="selectedOverlayColor">#A690CAF9</color>
+    <color name="statusViewRelativeLayoutWrapper">#0C0C0C</color>
+    <color name="semiTransparentColor">#80000000</color>
+
+    <color name="quick_preview_backgroundColor">#05463F</color>
+
+
+</resources>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="72dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="@dimen/dimen6"
+    android:layout_marginEnd="@dimen/dimen6"
+    android:layout_marginTop="@dimen/dimen8">
+
+    <RelativeLayout
+        android:id="@+id/story_layout_imageView_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:elevation="@dimen/dimen12"
+            app:cardCornerRadius="@dimen/dimen32">
+
+            <LinearLayout
+                android:id="@+id/insta_user_background"
+                android:layout_width="@dimen/dimen64"
+                android:layout_height="@dimen/dimen64"
+                android:background="@drawable/insta"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/story_layout_imageView"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                />
+
+        </androidx.cardview.widget.CardView>
+
+
+        <ProgressBar
+            android:id="@+id/story_layout_progressbar"
+            android:layout_width="@dimen/dimen24"
+            android:layout_height="@dimen/dimen24"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
+
+
+
+    <TextView
+        android:id="@+id/story_layout_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/story_layout_imageView_wrapper"
+        android:text="user_name"
+        android:textSize="10sp"
+        android:layout_marginTop="@dimen/dimen2"
+        android:textColor="?attr/mediumImportantTextColor"
+        android:ellipsize="end"
+        android:maxLines="1"/>
+
+
+
+
+</RelativeLayout>

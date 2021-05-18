@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="theme">
+        <attr name="colorPrimary" format="color" />
+        <attr name="colorPrimaryVariant" format="color" />
+        <attr name="colorOnPrimary" format="color" />
+        <attr name="colorSecondary" format="color" />
+        <attr name="colorSecondaryVariant" format="color" />
+        <attr name="colorOnSecondary" format="color" />
+        <attr name="android:statusBarColor" format="color" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="normalIconTint" format="color" />
+        <attr name="navHeaderColor" format="color" />
+        <attr name="settingsHeaderBackgroundColor" format="color" />
+        <attr name="mediumImportantTextColor" format="color" />
+        <attr name="lowImportanceTextColor" format="color" />
+        <attr name="searchIconTint" format="color" />
+        <attr name="searchBackgroundColor" format="color" />
+        <attr name="searchTextColor" format="color" />
+        <attr name="dialogColor" format="color" />
+        <attr name="instaEditTextBackground" format="color" />
+        <attr name="instaEditTextTextColor" format="color" />
+        <attr name="photoCardBackground" format="color" />
+
+        <attr name="cardViewBackgroundColor" format="color" />
+
+    </declare-styleable>
+    <declare-styleable name="FullscreenAttrs">
+        <attr name="fullscreenBackgroundColor" format="color" />
+        <attr name="fullscreenTextColor" format="color" />
+    </declare-styleable>
+
+</resources>

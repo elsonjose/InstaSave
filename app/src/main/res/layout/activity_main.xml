@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity"
+    android:background="?attr/backgroundColor"
+    android:id="@+id/root_insta_layout">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="?attr/colorPrimary"
+        android:layout_weight="1"
+        app:titleTextColor="@color/white"
+        app:layout_scrollFlags="scroll|enterAlways"
+        >
+    </androidx.appcompat.widget.Toolbar>
+
+    <include
+        android:id="@+id/doc_selected_view"
+        layout="@layout/doc_selected_layout"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_toolbar"/>
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/insta_frag_swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/insta_frag_scrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:overScrollMode="never">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <ProgressBar
+                                android:id="@+id/stories_progressbar"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                android:indeterminate="true"
+                                android:layout_marginTop="-6dp"
+                                android:layout_marginBottom="-6dp"
+                                android:visibility="gone"/>
+
+                            <TextView
+                                android:id="@+id/stories_info_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:text="Tap here to see your stories anonymously"
+                                android:paddingTop="@dimen/dimen16"
+                                android:paddingBottom="@dimen/dimen16"
+                                android:layout_margin="@dimen/dimen4"
+                                android:backgroundTint="?attr/cardViewBackgroundColor"
+                                android:background="@drawable/curved_corners_light"/>
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/stories_recyclerView_wrapper"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="gone"
+                                android:layout_margin="@dimen/dimen4"
+                                app:cardCornerRadius="@dimen/dimen6">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:paddingBottom="@dimen/dimen4">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Watch your stories anonymously"
+                                        android:layout_marginStart="@dimen/dimen12"
+                                        android:textColor="?attr/lowImportanceTextColor"
+                                        android:layout_marginTop="@dimen/dimen8"/>
+
+                                    <androidx.recyclerview.widget.RecyclerView
+                                        android:id="@+id/stories_recyclerView"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
+
+                                </LinearLayout>
+
+                            </androidx.cardview.widget.CardView>
+
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/insta_fragment_recyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </LinearLayout>
+
+                </androidx.core.widget.NestedScrollView>
+
+
+                <TextView
+                    android:id="@+id/insta_no_status_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="@string/insta_no_saved_post_info"
+                    android:gravity="center"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginEnd="36dp"
+                    android:visibility="gone"
+                    android:textSize="@dimen/dimen18"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

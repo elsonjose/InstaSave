@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.SettingsActivity"
+    android:orientation="vertical"
+    android:background="?attr/backgroundColor"
+    android:id="@+id/settings_root_layout">
+
+    <include layout="@layout/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:id="@+id/setting_toolbar"/>
+
+   <ScrollView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+       <LinearLayout
+           android:id="@+id/setting_item_wrapper"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="vertical"
+           android:background="?attr/backgroundColor">
+
+           <LinearLayout
+               android:id="@+id/settings_theme_wrapper"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="vertical">
+
+               <TextView
+                   android:layout_marginTop="@dimen/dimen2"
+                   android:id="@+id/setting_theme_type"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:paddingStart="10dp"
+                   android:paddingEnd="10dp"
+                   android:text="Theme"
+                   android:textSize="16sp"
+                   android:padding="8dp"
+                   android:textStyle="bold"
+                   android:background="?attr/settingsHeaderBackgroundColor"
+                   android:textColor="?attr/mediumImportantTextColor"
+                   />
+
+               <com.google.android.material.switchmaterial.SwitchMaterial
+                   android:id="@+id/setting_light_theme_switch"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Enable light theme"
+                   android:layout_marginStart="@dimen/dimen12"
+                   android:layout_marginEnd="@dimen/dimen12"
+                   android:textSize="14sp"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:minHeight="0dp"
+                   android:padding="@dimen/dimen2"
+                   android:layout_marginTop="@dimen/dimen4"
+                   />
+
+               <com.google.android.material.switchmaterial.SwitchMaterial
+                   android:id="@+id/setting_dark_theme_switch"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Enable dark theme"
+                   android:layout_marginStart="@dimen/dimen12"
+                   android:layout_marginEnd="@dimen/dimen12"
+                   android:textSize="14sp"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:minHeight="0dp"
+                   android:padding="@dimen/dimen2"
+                   />
+
+           </LinearLayout>
+
+           <TextView
+               android:id="@+id/setting_theme_info_textview"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="@string/sys_theme_policy"
+               android:layout_marginStart="@dimen/dimen12"
+               android:layout_marginEnd="@dimen/dimen12"
+               android:textSize="@dimen/dimen14"
+               android:textColor="?attr/lowImportanceTextColor"
+               android:paddingTop="@dimen/dimen4"
+               android:paddingBottom="@dimen/dimen4"
+               android:onClick="viewSysThemePolicy"
+               android:paddingStart="@dimen/dimen2"
+               android:paddingEnd="@dimen/dimen2"
+               android:visibility="gone"
+               />
+
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:paddingStart="10dp"
+               android:paddingEnd="10dp"
+               android:text="About"
+               android:textSize="16sp"
+               android:padding="8dp"
+               android:textStyle="bold"
+               android:background="?attr/settingsHeaderBackgroundColor"
+               android:textColor="?attr/mediumImportantTextColor"
+               android:layout_marginTop="@dimen/dimen8"
+               />
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/dimen2"
+               android:orientation="horizontal"
+               android:layout_marginStart="@dimen/dimen12"
+               android:layout_marginEnd="@dimen/dimen16"
+               android:paddingTop="@dimen/dimen6"
+               android:paddingBottom="@dimen/dimen6"
+               android:layout_marginTop="@dimen/dimen4"
+               android:visibility="gone">
+
+
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Version 1.0.19"
+                   android:textSize="14sp"
+                   android:layout_weight="1"
+                   android:layout_gravity="center_vertical"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:onClick="viewVersion"
+                   />
+
+               <ImageButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:background="@android:color/transparent"
+                   android:src="@drawable/ic_outline_build"
+                   android:tint="?attr/normalIconTint"
+                   android:onClick="viewVersion"
+                   />
+
+           </LinearLayout>
+
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/dimen2"
+               android:orientation="horizontal"
+               android:layout_marginStart="@dimen/dimen12"
+               android:layout_marginEnd="@dimen/dimen16"
+               android:paddingTop="@dimen/dimen6"
+               android:paddingBottom="@dimen/dimen6"
+
+               android:layout_marginTop="@dimen/dimen4">
+
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Terms and Conditions"
+                   android:textSize="14sp"
+                   android:layout_weight="1"
+                   android:layout_gravity="center_vertical"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:onClick="viewTerms"
+                   />
+
+               <ImageButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:background="@android:color/transparent"
+                   android:src="@drawable/ic_info"
+                   android:tint="?attr/normalIconTint"
+                   android:onClick="viewTerms"
+                   />
+           </LinearLayout>
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/dimen2"
+               android:orientation="horizontal"
+               android:layout_marginStart="@dimen/dimen12"
+               android:layout_marginEnd="@dimen/dimen16"
+               android:paddingTop="@dimen/dimen6"
+               android:paddingBottom="@dimen/dimen6">
+
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Privacy Policy"
+                   android:textSize="14sp"
+                   android:layout_weight="1"
+                   android:layout_gravity="center_vertical"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:onClick="viewPolicy"
+                   />
+
+               <ImageButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:background="@android:color/transparent"
+                   android:src="@drawable/ic_privacy"
+                   android:tint="?attr/normalIconTint"
+                   android:onClick="viewPolicy"
+                   />
+           </LinearLayout>
+
+
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:paddingStart="10dp"
+               android:paddingEnd="10dp"
+               android:text="Others"
+               android:textSize="16sp"
+               android:padding="8dp"
+               android:textStyle="bold"
+               android:background="?attr/settingsHeaderBackgroundColor"
+               android:textColor="?attr/mediumImportantTextColor"
+               android:layout_marginTop="@dimen/dimen8"
+
+               />
+
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/dimen2"
+               android:orientation="horizontal"
+               android:layout_marginTop="@dimen/dimen4"
+               android:layout_marginStart="@dimen/dimen12"
+               android:layout_marginEnd="@dimen/dimen16"
+               android:paddingTop="@dimen/dimen6"
+               android:paddingBottom="@dimen/dimen6"
+               android:visibility="gone">
+
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Rate App"
+                   android:textSize="14sp"
+                   android:layout_weight="1"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:onClick="reviewApp"
+                   android:layout_gravity="center_vertical"
+                   />
+
+               <ImageButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:background="@android:color/transparent"
+                   android:src="@drawable/ic_baseline_star"
+                   android:tint="?attr/normalIconTint"
+                   android:onClick="reviewApp"
+                   />
+
+           </LinearLayout>
+
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/dimen2"
+               android:orientation="horizontal"
+               android:layout_marginStart="@dimen/dimen12"
+               android:layout_marginEnd="@dimen/dimen16"
+               android:paddingTop="@dimen/dimen6"
+               android:paddingBottom="@dimen/dimen6">
+
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Feedback"
+                   android:textSize="14sp"
+                   android:layout_weight="1"
+                   android:layout_gravity="center_vertical"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:onClick="sendMail"
+                   />
+
+               <ImageButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:background="@android:color/transparent"
+                   android:src="@drawable/ic_mail"
+                   android:tint="?attr/normalIconTint"
+                   android:onClick="sendMail"
+                   />
+           </LinearLayout>
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:padding="@dimen/dimen2"
+               android:orientation="horizontal"
+               android:layout_marginStart="@dimen/dimen12"
+               android:layout_marginEnd="@dimen/dimen16"
+               android:paddingTop="@dimen/dimen6"
+               android:paddingBottom="@dimen/dimen6"
+               android:visibility="gone">
+
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Licenses"
+                   android:textSize="14sp"
+                   android:layout_weight="1"
+                   android:layout_gravity="center_vertical"
+                   android:textColor="?attr/lowImportanceTextColor"
+                   android:onClick="viewLicense"
+                   />
+
+               <ImageButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:background="@android:color/transparent"
+                   android:src="@drawable/outline_gavel"
+                   android:tint="?attr/normalIconTint"
+                   android:onClick="viewLicense"
+                   />
+           </LinearLayout>
+
+       </LinearLayout>
+
+   </ScrollView>
+
+
+
+</LinearLayout>

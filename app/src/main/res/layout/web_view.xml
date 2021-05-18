@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/web_view_actionbar_cardView"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_alignParentTop="true"
+        android:backgroundTint="?attr/searchBackgroundColor"
+        app:cardCornerRadius="0dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            >
+
+            <ImageButton
+                android:id="@+id/web_view_actionbar_back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_arrow"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/dimen16"
+                android:background="@android:color/transparent"
+                android:tint="?attr/searchIconTint"
+                />
+
+            <TextView
+                android:id="@+id/web_view_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/dimen12"
+                android:layout_marginEnd="@dimen/dimen12"
+                android:background="@android:color/transparent"
+                android:padding="@dimen/dimen8"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:textColor="?attr/searchTextColor"
+                android:textSize="@dimen/dimen14"
+                android:maxLines="1"
+                />
+
+        </LinearLayout>
+        <ProgressBar
+            android:id="@+id/web_view_progressbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="-8dp"
+            android:progressTint="?attr/colorAccent" />
+
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/web_view_actionbar_cardView"
+        android:backgroundTint="?attr/backgroundColor"
+        >
+
+        <WebView
+            android:id="@+id/web_web_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="300dp"
+            android:backgroundTint="?attr/backgroundColor"
+            />
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</RelativeLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="?actionBarSize"
+    android:background="?attr/searchBackgroundColor"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:elevation="@dimen/dimen16">
+
+    <ImageButton
+        android:id="@+id/doc_selected_back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_arrow"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/dimen12"
+        android:layout_marginEnd="@dimen/dimen12"
+        android:tint="?attr/searchIconTint"
+        />
+
+    <TextView
+        android:id="@+id/doc_selected_count_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected: 1"
+        android:textSize="@dimen/dimen18"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/dimen12"
+        android:layout_weight="1"
+        android:textColor="?attr/searchTextColor"/>
+
+
+    <ImageButton
+        android:id="@+id/doc_selected_more_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_more_vert"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/dimen12"
+        android:layout_marginEnd="@dimen/dimen12"
+        android:tint="?attr/searchIconTint"
+        />
+
+</LinearLayout>
