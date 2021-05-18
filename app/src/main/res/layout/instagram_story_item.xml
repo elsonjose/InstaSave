@@ -82,7 +82,6 @@
                 android:text="time"
                 android:textSize="10sp"
                 android:textColor="@color/white"
-                android:ellipsize="end"
                 android:maxLines="1"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/dimen8"/>

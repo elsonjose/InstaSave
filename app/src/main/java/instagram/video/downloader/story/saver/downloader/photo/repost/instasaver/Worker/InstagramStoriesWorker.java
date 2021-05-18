@@ -45,43 +45,33 @@ public class InstagramStoriesWorker extends Worker {
         if (!TextUtils.isEmpty(cookie)) {
             String jsonData = sh.makeServiceCall(baseUrl, "", cookie);
             try {
-                JSONObject jsonObject = new JSONObject(jsonData);
-                if(jsonObject.has("lastupdate"))
+                SharedPreferences.Editor editor = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).edit();
+                editor.putLong(Constant.STORY_LAST_CHECKED_AT,System.currentTimeMillis()/1000);
+                editor.apply();
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
                 {
-                    Log.i(TAG, "doWork: data fetched");
-                    long lastUpdate = jsonObject.getLong("lastupdate");
-                    long lastChecked = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getLong(Constant.STORY_LAST_CHECKED_AT, (System.currentTimeMillis()-24*60*60*1000)/1000);
-                    if (lastUpdate>lastChecked)
-                    {
-                        SharedPreferences.Editor editor = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).edit();
-                        editor.putLong(Constant.STORY_LAST_CHECKED_AT,System.currentTimeMillis()/1000);
-                        editor.apply();
+                    String fileName = "story.txt";
+                    File outputFile = new File(context.get().getFilesDir()+fileName);
+                    if (!outputFile.exists())
+                        outputFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(outputFile);
+                    fos.write(jsonData.getBytes());
+                    fos.close();
 
-                        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
-                        {
-                            String fileName = "story.txt";
-                            File outputFile = new File(context.get().getFilesDir()+fileName);
-                            if (!outputFile.exists())
-                                outputFile.createNewFile();
-                            FileOutputStream fos = new FileOutputStream(outputFile);
-                            fos.write(jsonData.getBytes());
-                            fos.close();
-
-                        }
-                        else
-                        {
-                            OutputStreamWriter writer = new OutputStreamWriter(context.get().openFileOutput("story.txt", Context.MODE_PRIVATE));
-                            writer.write(jsonData);
-                            writer.close();
-                        }
-
-                        Log.i(TAG, "doWork: file written");
-                        Intent broadcastIntent=new Intent();
-                        broadcastIntent.setAction("com.refresh.screen");
-                        broadcastIntent.putExtra(Constant.BROADCAST_ACTION,Constant.INSTA_STORY_UPDATED);
-                        context.get().sendBroadcast(broadcastIntent);
-                    }
                 }
+                else
+                {
+                    OutputStreamWriter writer = new OutputStreamWriter(context.get().openFileOutput("story.txt", Context.MODE_PRIVATE));
+                    writer.write(jsonData);
+                    writer.close();
+                }
+
+                Log.i(TAG, "doWork: file written");
+                Intent broadcastIntent=new Intent();
+                broadcastIntent.setAction("com.refresh.screen");
+                broadcastIntent.putExtra(Constant.BROADCAST_ACTION,Constant.INSTA_STORY_UPDATED);
+                context.get().sendBroadcast(broadcastIntent);
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i(TAG, "doWork: "+e);

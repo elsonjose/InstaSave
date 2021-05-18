@@ -509,7 +509,10 @@ public class MainActivity extends AppCompatActivity {
                                     storyList.add(new InstagramDownloadModel(type,url,time));
                                 }
                             }
-                            userStoriesList.add(new InstagramStoryModel(name,dp,storyList));
+                            if(storyList.size()>0)
+                            {
+                                userStoriesList.add(new InstagramStoryModel(name,dp,storyList));
+                            }
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -539,20 +542,22 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
                     }
+                    else
+                    {
+                        OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstagramStoriesWorker.class).build();
+                        WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.REPLACE,downloadWork).enqueue();
+                    }
 
                 }
                 catch (FileNotFoundException e)
                 {
                     OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstagramStoriesWorker.class).build();
-                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.KEEP,downloadWork).enqueue();
+                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.REPLACE,downloadWork).enqueue();
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                     Log.i(TAG, "FetchInstagramStories : "+e);
                 }
-
-                OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstagramStoriesWorker.class).build();
-                WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.KEEP,downloadWork).enqueue();
 
 
 
