@@ -244,9 +244,15 @@ public class InstagramStoryViewActivity extends AppCompatActivity {
             holder.storyProgressbar.setVisibility(View.VISIBLE);
             userViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
                 @Override
-                public void onPageSelected(int position) {
-                    itemPositionWithinUserStory=position;
-                    storyTimeTextView.setText(getFormattedTime(userStories.get(position).getTime()));
+                public void onPageSelected(int p) {
+                    itemPositionWithinUserStory=p;
+                    try {
+                        storyTimeTextView.setText(getFormattedTime(userStories.get(position).getTime()));
+                    }
+                    catch (Exception e)
+                    {
+                        Log.i(TAG, "onPageSelected: "+e);
+                    }
 
                 }
             });

@@ -560,7 +560,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-
             }
 
 
@@ -760,7 +759,7 @@ public class MainActivity extends AppCompatActivity {
                         String dateAdded = cursor_image.getString(dateAddedColumn);
                         String filePath = cursor_image.getString(data);
                         int size = cursor_image.getInt(sizeColumn);
-                        Uri contentUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
+                        Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
                         long addedTime = System.currentTimeMillis();
                         try {
