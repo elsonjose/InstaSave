@@ -33,6 +33,7 @@ import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.MainActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.R;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
 
 
 public class SettingsActivity extends AppCompatActivity {
@@ -58,6 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
             intent.putExtra(Intent.EXTRA_SUBJECT, "InstaSave Feedback");
             startActivity(intent);
         } catch (android.content.ActivityNotFoundException ex) {
+            FirebaseLogger.logErrorData("SettingsActivity sendMail ",ex);
             showSnackBarMessage(findViewById(R.id.settings_root_layout),"No email clients installed on device");
         }
     }

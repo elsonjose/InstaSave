@@ -3,7 +3,6 @@ package instagram.video.downloader.story.saver.downloader.photo.repost.instasave
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -29,7 +28,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.text.Html;
 import android.text.TextUtils;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -101,11 +99,9 @@ import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.InstagramStoryModel;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.Status;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
-import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.HttpHandler;
-import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Util;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.WrapGridLayoutManager;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.ViewHolder.StatusViewHolder;
-import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstaDownloadWorker;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstagramStoriesWorker;
 
 public class MainActivity extends AppCompatActivity {
@@ -176,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
         } catch (Exception e) {
-
+            FirebaseLogger.logErrorData("MainActivity getSupportActionbar ",e);
         }
         scrollView = findViewById(R.id.insta_frag_scrollView);
         storiesRecyclerViewWrapper = findViewById(R.id.stories_recyclerView_wrapper);
@@ -443,8 +439,10 @@ public class MainActivity extends AppCompatActivity {
 //                    Log.i(TAG, "onWindowFocusChanged: "+url);
                 }
             }
+
         } catch (Exception e) {
             Log.i(TAG, "onWindowFocusChanged: " + e);
+            FirebaseLogger.logErrorData("MainActivity onWindowFocusChanged ",e);
         }
     }
 
@@ -553,10 +551,12 @@ public class MainActivity extends AppCompatActivity {
                 {
                     OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstagramStoriesWorker.class).build();
                     WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.REPLACE,downloadWork).enqueue();
+                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories fileNotFound ",e);
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                     Log.i(TAG, "FetchInstagramStories : "+e);
+                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ",e);
                 }
 
 
@@ -646,6 +646,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (Exception e)
                 {
+                    FirebaseLogger.logErrorData("MainActivity getInstaPostsApi28AndBelow ",e);
                     Log.i(TAG, "run: "+e);
                 }
 
@@ -739,6 +740,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
+                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove video data timeparseing",e);
                             Log.i(TAG, "run: "+e);
                         }
 
@@ -768,6 +770,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
+                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove image data timeparsing",e);
                             Log.i(TAG, "run: "+e);
                         }
 
@@ -780,6 +783,7 @@ public class MainActivity extends AppCompatActivity {
                 catch (Exception e)
                 {
                     Log.i(TAG, "getInstaPostsApi29AndAbove: "+e);
+                    FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove ",e);
                 }
 
 
@@ -1151,6 +1155,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
+                            FirebaseLogger.logErrorData("MainActivity circleReveal setting toolbar visibility",e);
                             Log.i(TAG, "onAnimationEnd: "+e);
                         }
                     }
@@ -1161,6 +1166,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
+                            FirebaseLogger.logErrorData("MainActivity circleReveal hiding toolbar visibility",e);
                             Log.i(TAG, "onAnimationEnd: "+e);
                         }
                     }
@@ -1209,6 +1215,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 Log.i(TAG, "clearSelection: " + e);
+                FirebaseLogger.logErrorData("MainActivity clearSelection ",e);
             }
             if (popup != null) {
                 popup.dismiss();
@@ -1271,5 +1278,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return (super.onOptionsItemSelected(item));
     }
-    
+
 }

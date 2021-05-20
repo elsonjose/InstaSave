@@ -26,6 +26,7 @@ import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.Status;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.R;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
 
 public class StatusViewActivity extends AppCompatActivity {
     private static final String TAG = "StatusViewActivity";
@@ -99,6 +100,7 @@ public class StatusViewActivity extends AppCompatActivity {
                 try {
                     startActivity(whatsappIntent);
                 } catch (android.content.ActivityNotFoundException ex) {
+                    FirebaseLogger.logErrorData("StatusViewActivity  repostInstagramBtn.setOnClickListener",ex);
                     showActionResult("Instagram not installed.");
                 }
             }
@@ -120,6 +122,7 @@ public class StatusViewActivity extends AppCompatActivity {
                 try {
                     startActivity(whatsappIntent);
                 } catch (android.content.ActivityNotFoundException ex) {
+                    FirebaseLogger.logErrorData("StatusViewActivity  repostWhatsappBtn.setOnClickListener",ex);
                     showActionResult("Whatsapp not installed.");
                 }
             }
@@ -137,6 +140,7 @@ public class StatusViewActivity extends AppCompatActivity {
                     }
                     catch (Exception e)
                     {
+                        FirebaseLogger.logErrorData("StatusViewActivity deleteStatusBtn.setOnClickListener",e);
                         Log.i(TAG, "onClick: "+e);
                     }
                 }

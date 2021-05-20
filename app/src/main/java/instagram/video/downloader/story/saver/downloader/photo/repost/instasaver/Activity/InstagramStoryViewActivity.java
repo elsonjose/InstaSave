@@ -56,6 +56,7 @@ import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.InstagramStoryModel;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.R;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Util;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstaDownloadWorker;
 
@@ -251,6 +252,7 @@ public class InstagramStoryViewActivity extends AppCompatActivity {
                     }
                     catch (Exception e)
                     {
+                        FirebaseLogger.logErrorData("InstagramStoryViewActivity userViewPager.registerOnPageChange ",e);
                         Log.i(TAG, "onPageSelected: "+e);
                     }
 
@@ -308,6 +310,7 @@ public class InstagramStoryViewActivity extends AppCompatActivity {
                         }
                     });
                 } catch (Exception e) {
+                    FirebaseLogger.logErrorData("InstagramStoryViewActivity holder.storyVideoView.setOnPreparedListener ",e);
                     Log.i(TAG, "onClick: expired");
                 }
             } else {
@@ -331,6 +334,7 @@ public class InstagramStoryViewActivity extends AppCompatActivity {
                             .into(holder.storyImageView);
                 } catch (Exception e) {
                     Log.i(TAG, "onClick: expired");
+                    FirebaseLogger.logErrorData("InstagramStoryViewActivity  Glide.with(InstagramStoryViewActivity.this).load(userStories.get(position) ",e);
                 }
             }
 
@@ -379,6 +383,7 @@ public class InstagramStoryViewActivity extends AppCompatActivity {
                     try {
                         startActivity(whatsappIntent);
                     } catch (android.content.ActivityNotFoundException ex) {
+                        FirebaseLogger.logErrorData("InstagramStoryViewActivity  holder.storyWhatsappBtn.setOnClickListener",ex);
                         showActionResult(holder.storyInfoTextView,holder.storyInfoWrapper,"Whatsapp not installed");
                     }
                 }
@@ -400,6 +405,7 @@ public class InstagramStoryViewActivity extends AppCompatActivity {
                     try {
                         startActivity(whatsappIntent);
                     } catch (android.content.ActivityNotFoundException ex) {
+                        FirebaseLogger.logErrorData("InstagramStoryViewActivity  holder.storyInstaBtn.setOnClickListener",ex);
                         showActionResult(holder.storyInfoTextView,holder.storyInfoWrapper,"Instagram not installed");
                     }
                 }
