@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
         } catch (Exception e) {
-            FirebaseLogger.logErrorData("MainActivity getSupportActionbar ",e);
+            FirebaseLogger.logErrorData("MainActivity getSupportActionbar ",e.toString());
         }
         scrollView = findViewById(R.id.insta_frag_scrollView);
         storiesRecyclerViewWrapper = findViewById(R.id.stories_recyclerView_wrapper);
@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             Log.i(TAG, "onWindowFocusChanged: " + e);
-            FirebaseLogger.logErrorData("MainActivity onWindowFocusChanged ",e);
+            FirebaseLogger.logErrorData("MainActivity onWindowFocusChanged ",e.toString());
         }
     }
 
@@ -551,12 +551,12 @@ public class MainActivity extends AppCompatActivity {
                 {
                     OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstagramStoriesWorker.class).build();
                     WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.REPLACE,downloadWork).enqueue();
-                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories fileNotFound ",e);
+                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories fileNotFound ",e.toString());
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                     Log.i(TAG, "FetchInstagramStories : "+e);
-                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ",e);
+                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ",e.toString());
                 }
 
 
@@ -646,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (Exception e)
                 {
-                    FirebaseLogger.logErrorData("MainActivity getInstaPostsApi28AndBelow ",e);
+                    FirebaseLogger.logErrorData("MainActivity getInstaPostsApi28AndBelow ",e.toString());
                     Log.i(TAG, "run: "+e);
                 }
 
@@ -740,7 +740,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
-                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove video data timeparseing",e);
+                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove video data timeparseing",e.toString());
                             Log.i(TAG, "run: "+e);
                         }
 
@@ -770,7 +770,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
-                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove image data timeparsing",e);
+                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove image data timeparsing",e.toString());
                             Log.i(TAG, "run: "+e);
                         }
 
@@ -783,7 +783,7 @@ public class MainActivity extends AppCompatActivity {
                 catch (Exception e)
                 {
                     Log.i(TAG, "getInstaPostsApi29AndAbove: "+e);
-                    FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove ",e);
+                    FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove ",e.toString());
                 }
 
 
@@ -1155,7 +1155,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
-                            FirebaseLogger.logErrorData("MainActivity circleReveal setting toolbar visibility",e);
+                            FirebaseLogger.logErrorData("MainActivity circleReveal setting toolbar visibility",e.toString());
                             Log.i(TAG, "onAnimationEnd: "+e);
                         }
                     }
@@ -1166,7 +1166,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         catch (Exception e)
                         {
-                            FirebaseLogger.logErrorData("MainActivity circleReveal hiding toolbar visibility",e);
+                            FirebaseLogger.logErrorData("MainActivity circleReveal hiding toolbar visibility",e.toString());
                             Log.i(TAG, "onAnimationEnd: "+e);
                         }
                     }
@@ -1215,7 +1215,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 Log.i(TAG, "clearSelection: " + e);
-                FirebaseLogger.logErrorData("MainActivity clearSelection ",e);
+                FirebaseLogger.logErrorData("MainActivity clearSelection ",e.toString());
             }
             if (popup != null) {
                 popup.dismiss();

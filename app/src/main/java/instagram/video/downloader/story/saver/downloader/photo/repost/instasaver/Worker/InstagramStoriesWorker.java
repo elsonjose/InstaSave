@@ -43,7 +43,7 @@ public class InstagramStoriesWorker extends Worker {
         String baseUrl = "https://swift-status-saver-backend.herokuapp.com/story/";
         String cookie = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COOKIE, "");
         if (!TextUtils.isEmpty(cookie)) {
-            String jsonData = sh.makeServiceCall(baseUrl, "", cookie);
+            String jsonData = sh.makeServiceCall(baseUrl,  cookie);
             try {
                 SharedPreferences.Editor editor = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).edit();
                 editor.putLong(Constant.STORY_LAST_CHECKED_AT,System.currentTimeMillis()/1000);

@@ -100,7 +100,7 @@ public class StatusViewActivity extends AppCompatActivity {
                 try {
                     startActivity(whatsappIntent);
                 } catch (android.content.ActivityNotFoundException ex) {
-                    FirebaseLogger.logErrorData("StatusViewActivity  repostInstagramBtn.setOnClickListener",ex);
+                    FirebaseLogger.logErrorData("StatusViewActivity  repostInstagramBtn.setOnClickListener",ex.toString());
                     showActionResult("Instagram not installed.");
                 }
             }
@@ -122,7 +122,7 @@ public class StatusViewActivity extends AppCompatActivity {
                 try {
                     startActivity(whatsappIntent);
                 } catch (android.content.ActivityNotFoundException ex) {
-                    FirebaseLogger.logErrorData("StatusViewActivity  repostWhatsappBtn.setOnClickListener",ex);
+                    FirebaseLogger.logErrorData("StatusViewActivity  repostWhatsappBtn.setOnClickListener",ex.toString());
                     showActionResult("Whatsapp not installed.");
                 }
             }
@@ -140,7 +140,7 @@ public class StatusViewActivity extends AppCompatActivity {
                     }
                     catch (Exception e)
                     {
-                        FirebaseLogger.logErrorData("StatusViewActivity deleteStatusBtn.setOnClickListener",e);
+                        FirebaseLogger.logErrorData("StatusViewActivity deleteStatusBtn.setOnClickListener",e.toString());
                         Log.i(TAG, "onClick: "+e);
                     }
                 }

@@ -20,6 +20,8 @@ import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Db.LinkDatabase;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.ResponseModel;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.CookieUtils;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.HttpHandler;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Notification;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Util;
@@ -34,7 +36,12 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
     public static final int NO_MEDIA_FOUND=-2;
     public static final int STORY_EXPIRED=-4;
     public static final int UNIDENTIFIED_URL=-5;
+    public static final int UNIDENTIFIED_MEDIA_TYPE=-8;
     public static final int UNKNOWN_ERROR=-6;
+    public static final int MISSING_KEYS=-7;
+
+
+    public static final int STATUS_OK=200;
 
 
     public DownloadIGPost(Context context) {
@@ -50,70 +57,169 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
     @Override
     protected Integer doInBackground(String... strings) {
         LinkDatabase linkDatabase = Room.databaseBuilder(context.get(), LinkDatabase.class, Constant.LINK_DB).fallbackToDestructiveMigration().build();
-        Log.i(TAG, "url: "+strings[0]);
 
+        String reqUrl = strings[0];
+
+        if (reqUrl.startsWith("https://instagram.com/")) {
+            reqUrl = reqUrl.replace("https://instagram.com/", "https://www.instagram.com/");
+        }
+        String cookie = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COOKIE, "");
+        Log.i(TAG, "reqUrl: "+reqUrl);
         String type = getUrlType(strings[0]);
         if(!TextUtils.isEmpty(type))
         {
-            HttpHandler sh = new HttpHandler();
-            String baseUrl= "https://swift-status-saver-backend.herokuapp.com/instagram/";
-            String cookie = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COOKIE, "");
-            if(!TextUtils.isEmpty(cookie))
+            ResponseModel model=null;
+
+            if(type.equals(Constant.INSTAGRAM_POST))
             {
-                // has cookie
-                String jsonData = sh.makeServiceCall(baseUrl,strings[0],cookie);
-//                    Log.i(TAG, "doInBackground: "+jsonData);
-                ResponseModel responseModel = new ResponseModel();
-                if (type.equals("posts"))
+                // url is post
+                String postBaseUrl = "https://www.instagram.com/p/";
+                if(!reqUrl.contains("/?"))
                 {
-                    responseModel = sh.getPosts(jsonData);
-                }
-                else if (type.equals("reel"))
-                {
-                    responseModel = sh.getReels(jsonData);
-                }
-                else
-                {
-                    responseModel = sh.getStories(jsonData);
+                    String[] urlIdentifier = reqUrl.split("/p/");
+                    String urlIdentity = urlIdentifier[1];
+                    if (urlIdentity.contains("/"))
+                    {
+                        int slashIndex = urlIdentity.indexOf("/");
+                        urlIdentity = urlIdentity.substring(0,slashIndex);
+                    }
+                    reqUrl = postBaseUrl+urlIdentity+"/?";
                 }
 
-                if(responseModel.getStatus() ==Constant.FETCH_SUCCESSFUL)
+                String postIdentifier = reqUrl.substring(reqUrl.indexOf("p/") + 2, reqUrl.indexOf("/?"));
+                if(postIdentifier.length() == 11)
                 {
-                    if(responseModel.getModelList().size()>0)
+                    // url public
+                    String apiReqUrl = reqUrl.substring(0,39);
+                    apiReqUrl+="/?__a=1";
+//                    Log.i(TAG, "doInBackground: apiReqUrl: "+apiReqUrl);
+                    HttpHandler httpHandler = new HttpHandler();
+                    String jsonData = httpHandler.makeServiceCall(apiReqUrl,CookieUtils.getCookie("https://www.instagram.com/"));
+//                    Log.i(TAG, "doInBackground: "+jsonData);
+                    model = httpHandler.extractUrl(jsonData);
+                }
+                else if(postIdentifier.length() == 39)
+                {
+                    // url private
+                    String apiReqUrl = reqUrl.substring(0,67);
+                    apiReqUrl+="/?__a=1";
+                    Log.i(TAG, "doInBackground: apiReqUrl: "+apiReqUrl);
+                    HttpHandler httpHandler = new HttpHandler();
+                    if(!TextUtils.isEmpty(cookie))
                     {
-                        return startWorker(linkDatabase,responseModel);
+                        String jsonData = httpHandler.makeServiceCall(apiReqUrl,cookie);
+//                        Log.i(TAG, "doInBackground: "+jsonData);
+                        model = httpHandler.extractUrl(jsonData);
                     }
                     else
                     {
-                        publishProgress("No media found");
+                        publishProgress("Login required for private post");
+//                        Toast.makeText(context.get(), "Login required for private post", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+            }
+            else if(type.equals(Constant.INSTAGRAM_REEL))
+            {
+                // url is reel
+                String postBaseUrl = "https://www.instagram.com/reel/";
+                if(!reqUrl.contains("/?"))
+                {
+                    String[] urlIdentifier = reqUrl.split("/reel/");
+                    String urlIdentity = urlIdentifier[1];
+                    if (urlIdentity.contains("/"))
+                    {
+                        int slashIndex = urlIdentity.indexOf("/");
+                        urlIdentity = urlIdentity.substring(0,slashIndex);
+                    }
+                    reqUrl = postBaseUrl+urlIdentity+"/?";
+                }
+                String postIdentifier = reqUrl.substring(reqUrl.indexOf("reel/") + 5, reqUrl.indexOf("/?"));
+                if(postIdentifier.length() == 11)
+                {
+                    // reel public
+                    String apiReqUrl = reqUrl.substring(0,42);
+                    apiReqUrl+="/?__a=1";
+//                    Log.i(TAG, "doInBackground: apiReqUrl: "+apiReqUrl);
+                    HttpHandler httpHandler = new HttpHandler();
+                    String jsonData = httpHandler.makeServiceCall(apiReqUrl,CookieUtils.getCookie("https://www.instagram.com/"));
+//                    Log.i(TAG, "doInBackground: "+jsonData);
+                    model = httpHandler.extractUrl(jsonData);
+                }
+                else if(postIdentifier.length() == 39)
+                {
+                    // reel private
+                    String apiReqUrl = reqUrl.substring(0,70);
+                    apiReqUrl+="/?__a=1";
+//                    Log.i(TAG, "doInBackground: apiReqUrl: "+apiReqUrl);
+                    HttpHandler httpHandler = new HttpHandler();
+                    if(!TextUtils.isEmpty(cookie))
+                    {
+                        String jsonData = httpHandler.makeServiceCall(apiReqUrl,cookie);
+//                        Log.i(TAG, "doInBackground: "+jsonData);
+                        model = httpHandler.extractUrl(jsonData);
+                    }
+                    else
+                    {
+                        publishProgress("Login required for private reel");
+//                        Toast.makeText(context.get(), "Login required for private reel", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            else if(type.equals(Constant.INSTAGRAM_STORY))
+            {
+                // url is story
+                if(!TextUtils.isEmpty(cookie))
+                {
+
+                    String postBaseUrl = "https://www.instagram.com/";
+
+                    String[] urlIdentifier = reqUrl.split("/stories/");
+                    String urlIdentity = urlIdentifier[1];
+                    if (urlIdentity.contains("/"))
+                    {
+                        int slashIndex = urlIdentity.indexOf("/");
+                        urlIdentity = urlIdentity.substring(0,slashIndex);
+                    }
+                    reqUrl = postBaseUrl+urlIdentity+"/?__a=1"; // to get userId
+                    HttpHandler httpHandler = new HttpHandler();
+                    String jsonData = httpHandler.makeServiceCallForStory(reqUrl,cookie);
+                    model = httpHandler.extractStoryUrl(jsonData);
+
+                }
+                else
+                {
+                    publishProgress("Login required for story");
+                }
+
+            }
+            if(model!=null)
+            {
+                if(model.getStatus()==STATUS_OK)
+                {
+                    if(model.getModelList().size()>0)
+                    {
+                        startWorker(linkDatabase,model);
+                        return STATUS_OK;
+                    }
+                    else
+                    {
                         return NO_MEDIA_FOUND;
                     }
                 }
                 else
                 {
-                    int status = responseModel.getStatus();
-                    if (status == Constant.COOKIE_EXPIRED)
-                    {
-                        publishProgress("Need to login. Check notification");
-                        return LOGIN_NEEDED;
-                    }
-                    else if (status == Constant.STORY_EXPIRED)
-                    {
-                        publishProgress("Story expired");
-                        return STORY_EXPIRED;
-                    }
-                    else
-                    {
-                        publishProgress("Unknown error");
-                        return UNKNOWN_ERROR;
-                    }
+                    return  model.getStatus();
                 }
             }
             else
             {
-                publishProgress("Need to login. Check notification");
-                return  LOGIN_NEEDED;
+                String errorLoc = "DownloadIGPost";
+                String error = "response model is null for reqUrl "+reqUrl +" org_link "+strings[0];
+                FirebaseLogger.logErrorData(errorLoc,error);
             }
+
         }
         else
         {
@@ -121,6 +227,7 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
             return UNIDENTIFIED_URL;
         }
 
+        return UNKNOWN_ERROR;
     }
 
     private int startWorker(LinkDatabase linkDatabase, ResponseModel responseModel) {
@@ -154,15 +261,15 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
     private String getUrlType(String string) {
         if(string.contains("/p/"))
         {
-            return "posts";
+            return Constant.INSTAGRAM_POST;
         }
         else if(string.contains("/reel/"))
         {
-            return "reel";
+            return Constant.INSTAGRAM_REEL;
         }
         else if(string.contains("/stories/"))
         {
-            return "stories";
+            return Constant.INSTAGRAM_STORY;
         }
         return "";
     }

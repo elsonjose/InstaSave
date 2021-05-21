@@ -43,6 +43,11 @@ public class Constant {
     public static final String INSTA_STORY_UPDATED = "StoryUpdated";
     public static final String INSTA_STORY_WORKER_TAG = "StoryWorker";
 
-    public static String GRAPH_VIDEO="video";
-    public static String GRAPH_IMAGE="image";
+    public static final String INSTAGRAM_POST = "posts";
+    public static final String INSTAGRAM_REEL = "reel";
+    public static final String INSTAGRAM_STORY = "stories";
+
+    public static String GRAPH_VIDEO="GraphVideo";
+    public static String GRAPH_IMAGE="GraphImage";
+    public static String GRAPH_SIDE_CAR="GraphSidecar";
 }

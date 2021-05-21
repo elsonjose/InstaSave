@@ -59,7 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
             intent.putExtra(Intent.EXTRA_SUBJECT, "InstaSave Feedback");
             startActivity(intent);
         } catch (android.content.ActivityNotFoundException ex) {
-            FirebaseLogger.logErrorData("SettingsActivity sendMail ",ex);
+            FirebaseLogger.logErrorData("SettingsActivity sendMail ",ex.toString());
             showSnackBarMessage(findViewById(R.id.settings_root_layout),"No email clients installed on device");
         }
     }

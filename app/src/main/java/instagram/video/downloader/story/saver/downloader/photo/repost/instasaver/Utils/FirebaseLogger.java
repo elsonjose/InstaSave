@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class FirebaseLogger {
 
-    public static void logErrorData(String errorLoc, Exception e)
+    public static void logErrorData(String errorLoc, String e)
     {
         Map userLog = new HashMap();
         userLog.put("os", Build.VERSION.SDK_INT);
