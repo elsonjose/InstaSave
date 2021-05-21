@@ -92,10 +92,10 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
                     // url public
                     String apiReqUrl = reqUrl.substring(0,39);
                     apiReqUrl+="/?__a=1";
-//                    Log.i(TAG, "doInBackground: apiReqUrl: "+apiReqUrl);
+                    Log.i(TAG, "doInBackground: apiReqUrl: "+apiReqUrl);
                     HttpHandler httpHandler = new HttpHandler();
                     String jsonData = httpHandler.makeServiceCall(apiReqUrl,CookieUtils.getCookie("https://www.instagram.com/"));
-//                    Log.i(TAG, "doInBackground: "+jsonData);
+                    Log.i(TAG, "doInBackground: "+jsonData);
                     model = httpHandler.extractUrl(jsonData);
                 }
                 else if(postIdentifier.length() == 39)
@@ -108,7 +108,7 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
                     if(!TextUtils.isEmpty(cookie))
                     {
                         String jsonData = httpHandler.makeServiceCall(apiReqUrl,cookie);
-//                        Log.i(TAG, "doInBackground: "+jsonData);
+                        Log.i(TAG, "doInBackground: "+jsonData);
                         model = httpHandler.extractUrl(jsonData);
                     }
                     else
@@ -183,6 +183,7 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
                         urlIdentity = urlIdentity.substring(0,slashIndex);
                     }
                     reqUrl = postBaseUrl+urlIdentity+"/?__a=1"; // to get userId
+                    Log.i(TAG, "doInBackground: reqUrl "+reqUrl);
                     HttpHandler httpHandler = new HttpHandler();
                     String jsonData = httpHandler.makeServiceCallForStory(reqUrl,cookie);
                     model = httpHandler.extractStoryUrl(jsonData);

@@ -44,6 +44,7 @@ public class HttpHandler {
             conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0");
             conn.addRequestProperty("Connection","keep-alive");
             conn.addRequestProperty("Cookie",cookie);
+            conn.setInstanceFollowRedirects(false);
             conn.connect();
             if(conn.getResponseCode()==HttpURLConnection.HTTP_OK)
             {
@@ -67,7 +68,9 @@ public class HttpHandler {
     }
 
     public String makeServiceCallForStory(String reqUrl,String cookie)
-    {   String response = null;
+    {
+        Log.i(TAG, "makeServiceCallForStory: Inside this");
+        String response = null;
         try {
             URL url = new URL(reqUrl);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -77,16 +80,20 @@ public class HttpHandler {
             conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0");
             conn.addRequestProperty("Connection","keep-alive");
             conn.addRequestProperty("Cookie",cookie);
+            conn.setInstanceFollowRedirects(false);
             conn.connect();
             if(conn.getResponseCode()== HttpURLConnection.HTTP_OK)
             {
                 InputStream in = new BufferedInputStream(conn.getInputStream());
                 response = convertStreamToString(in);
+                Log.i(TAG, "makeServiceCallForStory: "+response);
                 JSONObject object = new JSONObject(response);
                 if (object.has("graphql") && object.getJSONObject("graphql").has("user") && object.getJSONObject("graphql").getJSONObject("user").has("id"))
                 {
                     String userId = object.getJSONObject("graphql").getJSONObject("user").getString("id");
+                    Log.i(TAG, "makeServiceCallForStory: "+userId);
                     URL storyUrl = new URL("https://i.instagram.com/api/v1/feed/user/"+userId+"/reel_media/");
+                    Log.i(TAG, "makeServiceCallForStory: "+storyUrl.toString());
                     HttpsURLConnection con = (HttpsURLConnection) storyUrl.openConnection();
                     con.setRequestMethod("GET");
                     con.addRequestProperty("Accept","application/json");
@@ -94,6 +101,8 @@ public class HttpHandler {
                     con.addRequestProperty("User-Agent","Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+");
                     con.addRequestProperty("Connection","keep-alive");
                     con.addRequestProperty("Cookie",cookie);
+                    Log.i(TAG, "makeServiceCallForStory: "+cookie);
+                    //con.setInstanceFollowRedirects(false);
                     con.connect();
                     if(con.getResponseCode()==HttpURLConnection.HTTP_OK)
                     {
