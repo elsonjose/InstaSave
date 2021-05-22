@@ -74,7 +74,7 @@ public class InstagramLoginActivity extends AppCompatActivity {
     private void returnCookieResult(final String mainCookie) {
 
         PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest
-                .Builder(InstagramStoriesWorker.class, 15, TimeUnit.MINUTES)
+                .Builder(InstagramStoriesWorker.class, 1, TimeUnit.HOURS)
                 .addTag(Constant.INSTA_STORY_WORKER_TAG)
                 .build();
         WorkManager.getInstance(InstagramLoginActivity.this).enqueueUniquePeriodicWork(Constant.INSTA_STORY_WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);

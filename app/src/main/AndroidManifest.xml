@@ -28,8 +28,6 @@
                 <action android:name="com.refresh.screen" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.InstagramStoryViewActivity"
-            android:screenOrientation="portrait" />
         <activity android:name=".Activity.InstagramLoginActivity" />
         <activity
             android:name=".Activity.DownloadInstaActivity"

@@ -69,7 +69,6 @@ public class HttpHandler {
 
     public String makeServiceCallForStory(String reqUrl,String cookie)
     {
-        Log.i(TAG, "makeServiceCallForStory: Inside this");
         String response = null;
         try {
             URL url = new URL(reqUrl);
@@ -86,14 +85,12 @@ public class HttpHandler {
             {
                 InputStream in = new BufferedInputStream(conn.getInputStream());
                 response = convertStreamToString(in);
-                Log.i(TAG, "makeServiceCallForStory: "+response);
                 JSONObject object = new JSONObject(response);
                 if (object.has("graphql") && object.getJSONObject("graphql").has("user") && object.getJSONObject("graphql").getJSONObject("user").has("id"))
                 {
                     String userId = object.getJSONObject("graphql").getJSONObject("user").getString("id");
-                    Log.i(TAG, "makeServiceCallForStory: "+userId);
                     URL storyUrl = new URL("https://i.instagram.com/api/v1/feed/user/"+userId+"/reel_media/");
-                    Log.i(TAG, "makeServiceCallForStory: "+storyUrl.toString());
+                    Log.i(TAG, "makeServiceCallForStory: "+storyUrl);
                     HttpsURLConnection con = (HttpsURLConnection) storyUrl.openConnection();
                     con.setRequestMethod("GET");
                     con.addRequestProperty("Accept","application/json");
@@ -101,19 +98,20 @@ public class HttpHandler {
                     con.addRequestProperty("User-Agent","Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+");
                     con.addRequestProperty("Connection","keep-alive");
                     con.addRequestProperty("Cookie",cookie);
-                    Log.i(TAG, "makeServiceCallForStory: "+cookie);
-                    //con.setInstanceFollowRedirects(false);
+                    con.setInstanceFollowRedirects(false);
                     con.connect();
                     if(con.getResponseCode()==HttpURLConnection.HTTP_OK)
                     {
                         InputStream inputStream = new BufferedInputStream(con.getInputStream());
                         response = convertStreamToString(inputStream);
+                        Log.i(TAG, "makeServiceCallForStory: "+response);
                     }
-                    else
+                    else if(con.getResponseCode()==429)
                     {
-                        Log.i(TAG, "makeServiceCall: connection failed");
+                        response= String.valueOf(429);
 
                     }
+                    Log.i(TAG, "makeServiceCallForStory: "+con.getResponseCode());
 
                 }
             }
@@ -135,7 +133,7 @@ public class HttpHandler {
         return response;
     }
 
-    private String convertStreamToString(InputStream is) {
+    public String convertStreamToString(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
 

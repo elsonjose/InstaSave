@@ -5,8 +5,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -61,9 +59,11 @@ import androidx.core.content.FileProvider;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
@@ -81,7 +81,6 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,18 +90,20 @@ import java.util.concurrent.Executors;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.InstagramLoginActivity;
-import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.InstagramStoryViewActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.SettingsActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.StatusViewActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.AsyncTask.DownloadIGPost;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Db.InstaLink;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Db.LinkDatabase;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.InstagramDownloadModel;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.InstagramStoryModel;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.Status;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Util;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.WrapGridLayoutManager;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.ViewHolder.StatusViewHolder;
-import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstagramStoriesWorker;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstaDownloadWorker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -202,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
                     storiesProgressbar.setVisibility(View.GONE);
                     storiesRecyclerViewWrapper.setVisibility(View.GONE);
                     storiesInfoTextView.setVisibility(View.VISIBLE);
-
                 }
                 loadSavedInstagramContents();
             }
@@ -422,33 +422,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-//        Log.i(TAG, "onWindowFocusChanged: ");
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        try {
-            if(clipboard.hasPrimaryClip())
-            {
-                ClipData clipData = clipboard.getPrimaryClip();
-                String url = clipData.getItemAt(0).getText().toString().trim();
-                if (!getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COPIED_URL, Constant.COPIED_URL).equals(url.replace("https://www.instagram.com/", "")) && url.contains("instagram.com")) {
-                    Toast t = Toast.makeText(MainActivity.this, "Instagram url detected. Processing", Toast.LENGTH_SHORT);
-                    t.show();
-                    askToDownloadInstaPost(url);
-//                    Log.i(TAG, "onWindowFocusChanged: "+url);
-                }
-            }
-
-        } catch (Exception e) {
-            Log.i(TAG, "onWindowFocusChanged: " + e);
-            FirebaseLogger.logErrorData("MainActivity onWindowFocusChanged ",e.toString());
-        }
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+////        Log.i(TAG, "onWindowFocusChanged: ");
+//        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//        try {
+//            if(clipboard.hasPrimaryClip())
+//            {
+//                ClipData clipData = clipboard.getPrimaryClip();
+//                String url = clipData.getItemAt(0).getText().toString().trim();
+//                if (!getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COPIED_URL, Constant.COPIED_URL).equals(url.replace("https://www.instagram.com/", "")) && url.contains("instagram.com")) {
+//                    Toast t = Toast.makeText(MainActivity.this, "Instagram url detected. Processing", Toast.LENGTH_SHORT);
+//                    t.show();
+//                    askToDownloadInstaPost(url);
+////                    Log.i(TAG, "onWindowFocusChanged: "+url);
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            Log.i(TAG, "onWindowFocusChanged: " + e);
+//            FirebaseLogger.logErrorData("MainActivity onWindowFocusChanged ",e.toString());
+//        }
+//    }
 
 
     public void FetchInstagramStories()
     {
+//        Log.i(TAG, "FetchInstagramStories: func called");
         storiesProgressbar.setVisibility(View.VISIBLE);
         storiesInfoTextView.setText("Fetching your stories");
         storiesInfoTextView.setVisibility(View.VISIBLE);
@@ -457,7 +458,6 @@ public class MainActivity extends AppCompatActivity {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-
 
                 String data = "";
                 try {
@@ -487,7 +487,7 @@ public class MainActivity extends AppCompatActivity {
                         reader.close();
                         data = builder.toString();
                     }
-//                    Log.i(TAG, "FetchInstagramStories: "+data);
+//                    Log.i(TAG, "FetchInstagramStories: data "+data);
                     if(!TextUtils.isEmpty(data))
                     {
                         JSONObject stories = new JSONObject(data);
@@ -496,21 +496,19 @@ public class MainActivity extends AppCompatActivity {
                         {   List<InstagramDownloadModel> storyList = new ArrayList<>();
                             String name = storiesList.getJSONObject(i).getString("name");
                             String dp = storiesList.getJSONObject(i).getString("dp");
+                            String uid = storiesList.getJSONObject(i).getString("uid");
                             JSONArray userStoryList = storiesList.getJSONObject(i).getJSONArray("stories");
                             for(int j=0;j<userStoryList.length();j++)
                             {
                                 String type = userStoryList.getJSONObject(j).getString("type");
                                 String url = userStoryList.getJSONObject(j).getString("url");
-                                long time = userStoryList.getJSONObject(j).getLong("time");
-                                if(time+(24*60*60)>(System.currentTimeMillis()/1000))
+                                long time = userStoryList.getJSONObject(j).getLong("expire_at");
+                                if(time<(System.currentTimeMillis()/1000))
                                 {
                                     storyList.add(new InstagramDownloadModel(type,url,time));
                                 }
                             }
-                            if(storyList.size()>0)
-                            {
-                                userStoriesList.add(new InstagramStoryModel(name,dp,storyList));
-                            }
+                            userStoriesList.add(new InstagramStoryModel(name,dp,uid,storyList));
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -542,16 +540,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstagramStoriesWorker.class).build();
-                        WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.REPLACE,downloadWork).enqueue();
+                        Log.i(TAG, "run: data empty");
                     }
 
-                }
-                catch (FileNotFoundException e)
-                {
-                    OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstagramStoriesWorker.class).build();
-                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_STORY_WORKER_TAG, ExistingWorkPolicy.REPLACE,downloadWork).enqueue();
-                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories fileNotFound ",e.toString());
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -559,9 +550,7 @@ public class MainActivity extends AppCompatActivity {
                     FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ",e.toString());
                 }
 
-
             }
-
 
 
         });
@@ -582,7 +571,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadSavedInstagramContents() {
 
-        Log.i(TAG, "loadSavedStatuses: ");
+//        Log.i(TAG, "loadSavedStatuses: ");
         instaPostList = new ArrayList<>();
         instaAdapter = new InstaAdapter(instaPostList);
         instaRecyclerView.setAdapter(instaAdapter);
@@ -628,7 +617,7 @@ public class MainActivity extends AppCompatActivity {
                     instaPostList.clear();
                     for (File f : statusFiles) {
                         if (f.exists() && f.getName().contains("Instagram_content_") && !instaPostList.contains(new Status(f.getAbsolutePath(), f.lastModified(), false, f.getName().contains(".mp4"))) && f.getName().contains("Instagram_") && (f.getName().contains("mp4") || f.getName().contains("jpg") || f.getName().contains("jpeg"))) {
-                            Log.i(TAG, "doInBackground: " + f.getName());
+//                            Log.i(TAG, "doInBackground: " + f.getName());
                             instaPostList.add(new Status(f.getAbsolutePath(), f.lastModified(), false, f.getName().contains(".mp4")));
 
                         }
@@ -636,7 +625,7 @@ public class MainActivity extends AppCompatActivity {
                     statusFiles = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)+ File.separator+"InstaSave").listFiles();
                     for (File f : statusFiles) {
                         if (f.exists() && f.getName().contains("Instagram_content_") && !instaPostList.contains(new Status(f.getAbsolutePath(), f.lastModified(), false, f.getName().contains(".mp4"))) && f.getName().contains("Instagram_") && (f.getName().contains("mp4") || f.getName().contains("jpg") || f.getName().contains("jpeg"))) {
-                            Log.i(TAG, "doInBackground: " + f.getName());
+//                            Log.i(TAG, "doInBackground: " + f.getName());
                             instaPostList.add(new Status(f.getAbsolutePath(), f.lastModified(), false, f.getName().contains(".mp4")));
 
                         }
@@ -691,7 +680,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getInstaPostsApi29AndAbove() {
 
-        Log.i(TAG, "getInstaPostsApi29AndAbove: inside function");
+//        Log.i(TAG, "getInstaPostsApi29AndAbove: inside function");
 
         instaPostList.clear();
 
@@ -828,7 +817,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class InstaStoriesAdapter extends RecyclerView.Adapter<InstaStoriesAdapter.InstaStoryViewHolder> {
         List<InstagramStoryModel> storyModelList = new ArrayList<>();
-
+        AnimationDrawable anim;
         public InstaStoriesAdapter(List<InstagramStoryModel> storyModelList) {
             this.storyModelList = storyModelList;
         }
@@ -844,11 +833,9 @@ public class MainActivity extends AppCompatActivity {
 
             holder.storyProgressbar.setVisibility(View.VISIBLE);
 
-            AnimationDrawable anim = (AnimationDrawable) holder.instaBackground.getBackground();
-            anim.setEnterFadeDuration(1500);
-            anim.setExitFadeDuration(1500);
-            if (anim != null && !anim.isRunning())
-                anim.start();
+
+
+
 
             Glide.with(MainActivity.this).load(storyModelList.get(position).getProfileUrl())
                     .listener(new RequestListener<Drawable>() {
@@ -871,12 +858,33 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-                    Intent i = new Intent(MainActivity.this, InstagramStoryViewActivity.class);
-                    i.putParcelableArrayListExtra(Constant.STATUS_PASS_KEY, (ArrayList<? extends Parcelable>) storyModelList);
-                    i.putExtra(Constant.STATUS_PASS_POSITION, position);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    if(storyModelList.get(position).getStoryList().size()>0)
+                    {
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                LinkDatabase linkDatabase = Room.databaseBuilder(MainActivity.this, LinkDatabase.class, Constant.LINK_DB).fallbackToDestructiveMigration().build();
+                                List<InstagramDownloadModel> modelList = storyModelList.get(position).getStoryList();
+                                for(int i=0;i<modelList.size();i++)
+                                {
+                                    if(!linkDatabase.getLinkDao().checkInstaLinkExists(modelList.get(i).getUrl()))
+                                    {
+                                        linkDatabase.getLinkDao().addLink(new InstaLink(modelList.get(i).getUrl(), 0,false,true,false,modelList.get(i).getType()));
+                                    }
+                                }
+                                if(new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.ENQUEUED && new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.RUNNING)
+                                {
+                                    OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstaDownloadWorker.class).build();
+                                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_DOWNLOAD_WORKER_TAG, ExistingWorkPolicy.KEEP,downloadWork).enqueue();
+                                }
+                            }
+                        });
+                    }
+                    else
+                    {
+                        String reqUrl = "https://i.instagram.com/api/v1/feed/user/"+storyModelList.get(position).getUid()+"/reel_media/";
+                        new DownloadIGPost(MainActivity.this).execute(reqUrl);
+                    }
                 }
             });
 
@@ -901,6 +909,11 @@ public class MainActivity extends AppCompatActivity {
                 nameTextView = itemView.findViewById(R.id.story_layout_textView);
                 profileImageView = itemView.findViewById(R.id.story_layout_imageView);
                 storyProgressbar = itemView.findViewById(R.id.story_layout_progressbar);
+                AnimationDrawable anim = (AnimationDrawable) instaBackground.getBackground();
+                anim.setEnterFadeDuration(1500);
+                anim.setExitFadeDuration(1500);
+                if (anim != null && !anim.isRunning())
+                    anim.start();
             }
         }
     }
@@ -1200,7 +1213,7 @@ public class MainActivity extends AppCompatActivity {
                     count++;
                 }
             }
-            Log.i(TAG, "getSelectedDocCount: " + count);
+//            Log.i(TAG, "getSelectedDocCount: " + count);
             return count;
         }
 

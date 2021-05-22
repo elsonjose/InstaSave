@@ -15,7 +15,6 @@ public class FirebaseLogger {
         userLog.put("os", Build.VERSION.SDK_INT);
         userLog.put("device", Build.DEVICE);
         userLog.put("model", Build.MODEL);
-        userLog.put("product", Build.PRODUCT);
         userLog.put("appVersion","3-build");
         userLog.put("errorLoc",errorLoc);
         userLog.put("error",e);

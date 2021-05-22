@@ -9,19 +9,21 @@ import java.util.List;
 public class InstagramStoryModel implements Parcelable {
     String name;
     String profileUrl;
+    String uid;
     List<InstagramDownloadModel> storyList=new ArrayList<>();
 
-    public InstagramStoryModel(String name, String profileUrl, List<InstagramDownloadModel> storyList) {
+    public InstagramStoryModel(String name, String profileUrl, String uid, List<InstagramDownloadModel> storyList) {
         this.name = name;
         this.profileUrl = profileUrl;
+        this.uid = uid;
         this.storyList = storyList;
     }
 
     protected InstagramStoryModel(Parcel in) {
         name = in.readString();
         profileUrl = in.readString();
-        in.readList(storyList, InstagramDownloadModel.class.getClassLoader());
-
+        uid = in.readString();
+        storyList = in.createTypedArrayList(InstagramDownloadModel.CREATOR);
     }
 
     public static final Creator<InstagramStoryModel> CREATOR = new Creator<InstagramStoryModel>() {
@@ -36,28 +38,49 @@ public class InstagramStoryModel implements Parcelable {
         }
     };
 
-    public String getName() {
-        return name;
-    }
-
-    public String getProfileUrl() {
-        return profileUrl;
-    }
-
-    public List<InstagramDownloadModel> getStoryList() {
-        return storyList;
-    }
-
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(name);
-        parcel.writeString(profileUrl);
-        parcel.writeList(storyList);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(profileUrl);
+        dest.writeString(uid);
+        dest.writeTypedList(storyList);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public List<InstagramDownloadModel> getStoryList() {
+        return storyList;
+    }
+
+    public void setStoryList(List<InstagramDownloadModel> storyList) {
+        this.storyList = storyList;
     }
 }
 
