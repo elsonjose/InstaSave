@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,12 @@ import androidx.work.WorkManager;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.OnFailureListener;
+import com.google.android.play.core.tasks.OnSuccessListener;
+import com.google.android.play.core.tasks.Task;
 
 import java.util.concurrent.TimeUnit;
 
@@ -244,8 +251,32 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private void askReview() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.whatsapp.status.saver.downloader.share"));
-        startActivity(browserIntent);
+
+        ReviewManager manager = ReviewManagerFactory.create(SettingsActivity.this);
+        Task<ReviewInfo> req =  manager.requestReviewFlow();
+        req.addOnSuccessListener(new OnSuccessListener<ReviewInfo>() {
+            @Override
+            public void onSuccess(ReviewInfo result) {
+
+                Task<Void> flow = manager.launchReviewFlow(SettingsActivity.this,result);
+                flow.addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+
+                    }
+                });
+
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+
+                Toast.makeText(SettingsActivity.this, "Cannot rate InstaSave now", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
     @Override

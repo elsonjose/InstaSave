@@ -24,7 +24,7 @@ public class Notification extends ContextWrapper {
 
     WeakReference<Context> context;
     NotificationManager manager;
-    static final String Channel_ID="303",Channel_NAME="dossierC";
+    static final String Channel_ID="130",Channel_NAME="instasaveD";
 
 
     public Notification(Context context) {

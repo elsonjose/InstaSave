@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activities.InstagramLoginActivity">
+    tools:context=".Activity.InstagramLoginActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/instagram_toolbar"
@@ -31,11 +31,12 @@
         android:layout_gravity="center_vertical">
 
         <TextView
+            android:id="@+id/instagram_login_info_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dimen12"
             android:gravity="center_horizontal"
-            android:text="Instagram login is needed to download contents. Login is done from official Instagram page."
+            android:text="Instagram login is needed to download contents. Login is done securely from the official Instagram page."
             android:textSize="@dimen/dimen16" />
 
 
@@ -51,13 +52,13 @@
             android:onClick="logIntoInstagram"/>
 
         <Button
-            android:id="@+id/instagram_clear_cookies_btn"
+            android:id="@+id/instagram_remove_account_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen12"
             android:layout_marginEnd="@dimen/dimen12"
             android:layout_weight="1"
-            android:text="Remove Cookie"
+            android:text="Remove Account"
             android:textColor="@color/white"
             android:onClick="clearCookies"/>
 

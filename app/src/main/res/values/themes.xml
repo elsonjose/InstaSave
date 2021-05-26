@@ -10,9 +10,9 @@
         <item name="navHeaderColor">@color/whatsapp_green</item>
 
         <item name="settingsHeaderBackgroundColor">@color/lightSettingsHeaderBackgroundColor</item>
-        <item name="normalIconTint">@color/darkMediumImportanceTextColor</item>
+        <item name="normalIconTint">@color/lowImportanceTextColor</item>
 
-        <item name="searchIconTint">@color/whatsapp_green</item>
+        <item name="searchIconTint">@color/whatsapp_green_dark</item>
         <item name="searchBackgroundColor">@color/white</item>
         <item name="searchTextColor">@color/lowImportanceTextColor</item>
 
@@ -35,9 +35,7 @@
         <item name="badgeStyle">@style/CustomBadge</item>
         <item name="photoCardBackground">@color/white</item>
 
-
         <item name="cardViewBackgroundColor">@color/white</item>
-
 
     </style>
 

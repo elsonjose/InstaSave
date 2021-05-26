@@ -7,6 +7,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class InstaSave extends Application {
+    private static boolean activityVisible=false;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -16,4 +17,17 @@ public class InstaSave extends Application {
         FirebaseMessaging.getInstance().subscribeToTopic("all");
 
     }
+    public static boolean isActivityVisible() {
+        return activityVisible;
+    }
+
+    public static void activityResumed() {
+        activityVisible = true;
+    }
+
+    public static void activityPaused() {
+        activityVisible = false;
+    }
+
+
 }

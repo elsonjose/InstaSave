@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 
 public final class CookieUtils {
 
+    private static final String TAG = "CookieUtils";
+
     public static final CookieManager COOKIE_MANAGER = CookieManager.getInstance();
 
        @Nullable
@@ -32,6 +34,14 @@ public final class CookieUtils {
             return matcher.group(1);
         }
         return null;
+    }
+
+    public static String getUserIdFromCookie(final String cookies) {
+        final String dsUserId = getCookieValue(cookies, "ds_user_id");
+        if (dsUserId == null) {
+            return "";
+        }
+        return dsUserId;
     }
 
     @Nullable

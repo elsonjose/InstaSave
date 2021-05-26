@@ -10,7 +10,7 @@
         <item name="navHeaderColor">@color/darkNavHeaderColor</item>
 
         <item name="settingsHeaderBackgroundColor">@color/darkSettingsHeaderBackgroundColor</item>
-        <item name="normalIconTint">@color/lightGreen</item>
+        <item name="normalIconTint">@color/whatsapp_green</item>
 
         <item name="searchIconTint">@color/white</item>
         <item name="searchBackgroundColor">@color/darNavBackgroundColor</item>
@@ -35,6 +35,7 @@
         <item name="photoCardBackground">@color/darkPrimary</item>
 
         <item name="cardViewBackgroundColor">@color/darNavBackgroundColor</item>
+
 
     </style>
 

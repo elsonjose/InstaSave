@@ -53,9 +53,9 @@
                    android:text="Enable light theme"
                    android:layout_marginStart="@dimen/dimen12"
                    android:layout_marginEnd="@dimen/dimen12"
-                   android:textSize="14sp"
+                   android:textSize="@dimen/dimen16"
                    android:textColor="?attr/lowImportanceTextColor"
-                   android:minHeight="0dp"
+                   android:minHeight="@dimen/dimen48"
                    android:padding="@dimen/dimen2"
                    android:layout_marginTop="@dimen/dimen4"
                    />
@@ -67,9 +67,8 @@
                    android:text="Enable dark theme"
                    android:layout_marginStart="@dimen/dimen12"
                    android:layout_marginEnd="@dimen/dimen12"
-                   android:textSize="14sp"
+                   android:textSize="@dimen/dimen16"
                    android:textColor="?attr/lowImportanceTextColor"
-                   android:minHeight="0dp"
                    android:padding="@dimen/dimen2"
                    />
 
@@ -151,18 +150,19 @@
                android:layout_marginEnd="@dimen/dimen16"
                android:paddingTop="@dimen/dimen6"
                android:paddingBottom="@dimen/dimen6"
-
+               android:minHeight="@dimen/dimen48"
                android:layout_marginTop="@dimen/dimen4">
 
                <TextView
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:text="Terms and Conditions"
-                   android:textSize="14sp"
+                   android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
                    android:layout_gravity="center_vertical"
                    android:textColor="?attr/lowImportanceTextColor"
                    android:onClick="viewTerms"
+
                    />
 
                <ImageButton
@@ -172,6 +172,7 @@
                    android:src="@drawable/ic_info"
                    android:tint="?attr/normalIconTint"
                    android:onClick="viewTerms"
+                   android:layout_gravity="center_vertical"
                    />
            </LinearLayout>
 
@@ -183,13 +184,15 @@
                android:layout_marginStart="@dimen/dimen12"
                android:layout_marginEnd="@dimen/dimen16"
                android:paddingTop="@dimen/dimen6"
-               android:paddingBottom="@dimen/dimen6">
+               android:paddingBottom="@dimen/dimen6"
+               android:minHeight="@dimen/dimen48"
+               >
 
                <TextView
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:text="Privacy Policy"
-                   android:textSize="14sp"
+                   android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
                    android:layout_gravity="center_vertical"
                    android:textColor="?attr/lowImportanceTextColor"
@@ -203,6 +206,8 @@
                    android:src="@drawable/ic_privacy"
                    android:tint="?attr/normalIconTint"
                    android:onClick="viewPolicy"
+                   android:layout_gravity="center_vertical"
+
                    />
            </LinearLayout>
 
@@ -233,13 +238,15 @@
                android:layout_marginEnd="@dimen/dimen16"
                android:paddingTop="@dimen/dimen6"
                android:paddingBottom="@dimen/dimen6"
-               android:visibility="gone">
+               android:visibility="visible"
+               android:minHeight="@dimen/dimen48"
+               >
 
                <TextView
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
-                   android:text="Rate App"
-                   android:textSize="14sp"
+                   android:text="Rate InstaSave"
+                   android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
                    android:textColor="?attr/lowImportanceTextColor"
                    android:onClick="reviewApp"
@@ -253,6 +260,7 @@
                    android:src="@drawable/ic_baseline_star"
                    android:tint="?attr/normalIconTint"
                    android:onClick="reviewApp"
+                   android:layout_gravity="center_vertical"
                    />
 
            </LinearLayout>
@@ -266,13 +274,15 @@
                android:layout_marginStart="@dimen/dimen12"
                android:layout_marginEnd="@dimen/dimen16"
                android:paddingTop="@dimen/dimen6"
-               android:paddingBottom="@dimen/dimen6">
+               android:paddingBottom="@dimen/dimen6"
+               android:minHeight="@dimen/dimen48"
+               >
 
                <TextView
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:text="Feedback"
-                   android:textSize="14sp"
+                   android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
                    android:layout_gravity="center_vertical"
                    android:textColor="?attr/lowImportanceTextColor"
@@ -286,6 +296,7 @@
                    android:src="@drawable/ic_mail"
                    android:tint="?attr/normalIconTint"
                    android:onClick="sendMail"
+                   android:layout_gravity="center_vertical"
                    />
            </LinearLayout>
 

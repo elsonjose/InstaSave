@@ -3,6 +3,7 @@ package instagram.video.downloader.story.saver.downloader.photo.repost.instasave
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +26,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Db.InstaLink;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Db.LinkDatabase;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.InstaSave;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Model.ResponseModel;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.CookieUtils;
@@ -49,10 +51,11 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
 
 
     public static final int STATUS_OK=200;
-
+    String orgUrl="";
 
     public DownloadIGPost(Context context) {
         this.context = new WeakReference<Context>(context);
+        orgUrl = "";
     }
 
     @Override
@@ -65,6 +68,8 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
     protected Integer doInBackground(String... strings) {
         LinkDatabase linkDatabase = Room.databaseBuilder(context.get(), LinkDatabase.class, Constant.LINK_DB).fallbackToDestructiveMigration().build();
         String cookie = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COOKIE, "");
+
+        orgUrl = strings[0];
 
         String reqUrl = strings[0];
 //        Log.i(TAG, "doInBackground: "+reqUrl);
@@ -365,24 +370,10 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
         }
         if(integer>0)
         {
-            Toast t = Toast.makeText(context.get(), "Downloading", Toast.LENGTH_SHORT);
-            t.show();
-            try {
-                ClipboardManager clipboard = (ClipboardManager) context.get().getSystemService(Context.CLIPBOARD_SERVICE);
-                if(clipboard.hasPrimaryClip())
-                {
-                    String textToPaste = clipboard.getPrimaryClip().getItemAt(0).getText().toString().trim();
-                    if (clipboard.getPrimaryClip().getItemCount() > 0 && !TextUtils.isEmpty(textToPaste) && textToPaste.contains("instagram.com/"))
-                    {
-                        ClipData clipData = ClipData.newPlainText("", "");
-                        clipboard.setPrimaryClip(clipData);
-                    }
-                }
-
-            }
-            catch (Exception e)
+            if(!InstaSave.isActivityVisible())
             {
-                Log.i(TAG, "onPostExecute: "+e);
+                Toast t = Toast.makeText(context.get(), "Downloading", Toast.LENGTH_SHORT);
+                t.show();
             }
         }
     }

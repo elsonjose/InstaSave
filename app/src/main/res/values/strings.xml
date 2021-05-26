@@ -12,7 +12,7 @@
     <string name="no_notifications">Not receiving notifications about statuses.<font color='#2196F3'> Learn why.</font></string>
     <string name="sys_theme_policy">Following system theme policy.<font color='#2196F3'> Learn more.</font></string>
 
-    <string name="insta_no_saved_post_info">No Saved Content<font color='#2196F3' size="16">\nCopy or share link to InstaSave to download</font></string>
+    <string name="insta_no_saved_post_info">No Saved Content<font color='#1976D2' size="18">\nCopy or share link to InstaSave to download</font></string>
 
     <string name="share_to"><b>Share to...</b></string>
     <!-- TODO: Remove or change this placeholder text -->

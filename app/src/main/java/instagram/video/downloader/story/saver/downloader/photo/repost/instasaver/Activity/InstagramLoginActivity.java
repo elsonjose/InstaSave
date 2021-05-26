@@ -6,38 +6,57 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.SafeBrowsingResponse;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
+import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.bumptech.glide.Glide;
+
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.MainActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.R;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.CookieUtils;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.HttpHandler;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Util;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstagramStoriesWorker;
 
 public class InstagramLoginActivity extends AppCompatActivity {
@@ -49,12 +68,18 @@ public class InstagramLoginActivity extends AppCompatActivity {
     LinearLayout instagramWrapper;
     WebView loginWebView;
     private String webViewUrl;
+
     private boolean ready = false;
     private final WebChromeClient webChromeClient = new WebChromeClient();
     private final WebViewClient webViewClient = new WebViewClient() {
         @Override
         public void onPageStarted(final WebView view, final String url, final Bitmap favicon) {
             webViewUrl = url;
+        }
+
+        @Override
+        public void onSafeBrowsingHit(WebView view, WebResourceRequest request, int threatType, SafeBrowsingResponse callback) {
+            super.onSafeBrowsingHit(view, request, threatType, callback);
         }
 
         @Override
@@ -73,9 +98,12 @@ public class InstagramLoginActivity extends AppCompatActivity {
 
     private void returnCookieResult(final String mainCookie) {
 
+        Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
+
         PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest
                 .Builder(InstagramStoriesWorker.class, 1, TimeUnit.HOURS)
                 .addTag(Constant.INSTA_STORY_WORKER_TAG)
+                .setConstraints(constraints)
                 .build();
         WorkManager.getInstance(InstagramLoginActivity.this).enqueueUniquePeriodicWork(Constant.INSTA_STORY_WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
 
@@ -89,15 +117,14 @@ public class InstagramLoginActivity extends AppCompatActivity {
         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
         startActivity(intent);
         finish();
-    }
 
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences appDataPref = getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
-        String theme = appDataPref.getString(Constant.THEME_KEY,Constant.THEME_VAL_SYSTEM);
-        switch (theme)
-        {
+        String theme = appDataPref.getString(Constant.THEME_KEY, Constant.THEME_VAL_SYSTEM);
+        switch (theme) {
             case Constant.THEME_VAL_SYSTEM:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                 // disable manual selection
@@ -116,8 +143,7 @@ public class InstagramLoginActivity extends AppCompatActivity {
 
 
         MainActivity mainActivity = MainActivity.getMainActivity();
-        if(mainActivity!=null)
-        {
+        if (mainActivity != null) {
             mainActivity.finish();
         }
 
@@ -126,19 +152,21 @@ public class InstagramLoginActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         instagramWrapper = findViewById(R.id.instagram_wrapper);
         loginWebView = findViewById(R.id.webView);
-        Button cookieBtn = findViewById(R.id.instagram_clear_cookies_btn);
-        if(appDataPref.contains(Constant.COOKIE))
+
+
+        if(!TextUtils.isEmpty(appDataPref.getString(Constant.COOKIE,"")))
         {
-            cookieBtn.setVisibility(View.VISIBLE);
+            findViewById(R.id.instagram_remove_account_btn).setVisibility(View.VISIBLE);
         }
         else
         {
-            cookieBtn.setVisibility(View.GONE);
+            findViewById(R.id.instagram_remove_account_btn).setVisibility(View.GONE);
         }
 
-        Log.i(TAG, "onCreate: COOKIE "+appDataPref.getString(Constant.COOKIE,null));
-
     }
+
+
+
 
     private void initWebView() {
 
@@ -194,9 +222,16 @@ public class InstagramLoginActivity extends AppCompatActivity {
 
     public void logIntoInstagram(View view) {
 
-        initWebView();
-        hideInstagramWrapper();
-        showInstagramWebView();
+        if (new Util(InstagramLoginActivity.this).isConntectedToNet())
+        {
+            initWebView();
+            hideInstagramWrapper();
+            showInstagramWebView();
+        }
+        else
+        {
+            Toast.makeText(this, "Not connected to Internet", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -247,9 +282,9 @@ public class InstagramLoginActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = appDataPref.edit();
             editor.remove(Constant.COOKIE);
             editor.apply();
-            Toast t = Toast.makeText(this, "Cookie cleared", Toast.LENGTH_SHORT);
+            Toast t = Toast.makeText(this, "Removed account", Toast.LENGTH_SHORT);
             t.show();
-            Button cookieBtn = findViewById(R.id.instagram_clear_cookies_btn);
+            Button cookieBtn = findViewById(R.id.instagram_remove_account_btn);
             if(appDataPref.contains(Constant.COOKIE))
             {
                 cookieBtn.setAnimation(AnimationUtils.loadAnimation(InstagramLoginActivity.this,android.R.anim.fade_in));

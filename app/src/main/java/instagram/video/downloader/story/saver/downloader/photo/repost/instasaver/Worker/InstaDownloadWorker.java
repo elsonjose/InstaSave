@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -56,7 +57,7 @@ public class InstaDownloadWorker extends Worker {
 
         linkDatabase = Room.databaseBuilder(context, LinkDatabase.class, Constant.LINK_DB).fallbackToDestructiveMigration().build();
         List<InstaLink> instaLinkList = linkDatabase.getLinkDao().getAllLinks();
-        Log.i(TAG, "doWork: size " + instaLinkList.size());
+//        Log.i(TAG, "doWork: size " + instaLinkList.size());
 //        linkDatabase.getLinkDao().deleteAllLinks();
         if(instaLinkList.size()>0)
         {
@@ -185,13 +186,18 @@ public class InstaDownloadWorker extends Worker {
                                 values.put(MediaStore.Video.Media.IS_PENDING, false);
                                 context.getContentResolver().update(uri, values, null, null);
 
-                                Log.i(TAG, "onCreate: download complete");
-                                Log.i(TAG, "onCreate: uri " + uri);
+//                                Log.i(TAG, "onCreate: download complete");
+//                                Log.i(TAG, "onCreate: uri " + uri);
                                 instaLinkList.get(position).setDownloaded(true);
                                 instaLinkList.get(position).setQueued(false);
                                 InstaLink link = instaLinkList.get(position);
                                 linkDatabase.getLinkDao().updateLinkDatabase(new InstaLink(link.getUrl(), link.getLinkID(), link.isDownloaded(), link.isQueued(), link.isFailed(), link.getType()));
 
+                                SharedPreferences appDataPref = context.getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
+                                final SharedPreferences.Editor appDataPrefEditor = appDataPref.edit();
+                                int downloadedCount = appDataPref.getInt(Constant.DOWNLOADED_COUNT,0);
+                                appDataPrefEditor.putInt(Constant.DOWNLOADED_COUNT,downloadedCount+1);
+                                appDataPrefEditor.apply();
 
                             }
                             else {
@@ -212,10 +218,10 @@ public class InstaDownloadWorker extends Worker {
                             if (!new File(fileName).exists())
                                 new File(fileName).createNewFile();
 
-                            if(new File(fileName).exists())
-                            {
-                                Log.i(TAG, "downloadInstaPost: file created");
-                            }
+//                            if(new File(fileName).exists())
+//                            {
+//                                Log.i(TAG, "downloadInstaPost: file created");
+//                            }
 
                             URL _url = new URL(downloadUrl);
                             HttpURLConnection con = (HttpURLConnection) _url.openConnection();
@@ -267,6 +273,12 @@ public class InstaDownloadWorker extends Worker {
                                 InstaLink link = instaLinkList.get(position);
                                 linkDatabase.getLinkDao().updateLinkDatabase(new InstaLink(link.getUrl(), link.getLinkID(), link.isDownloaded(), link.isQueued(), link.isFailed(), link.getType()));
 
+                                SharedPreferences appDataPref = context.getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
+                                final SharedPreferences.Editor appDataPrefEditor = appDataPref.edit();
+                                int downloadedCount = appDataPref.getInt(Constant.DOWNLOADED_COUNT,0);
+                                appDataPrefEditor.putInt(Constant.DOWNLOADED_COUNT,downloadedCount+1);
+                                appDataPrefEditor.apply();
+
                             } else {
                                 InstaLink link = instaLinkList.get(position);
                                 link.setFailed(true);
@@ -283,7 +295,7 @@ public class InstaDownloadWorker extends Worker {
 
                         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q) {
 
-                            Log.i(TAG, "downloadInstaPost: image android Q or higher");
+//                            Log.i(TAG, "downloadInstaPost: image android Q or higher");
 
                             URL _url = new URL(downloadUrl);
                             HttpURLConnection con = (HttpURLConnection) _url.openConnection();
@@ -296,10 +308,10 @@ public class InstaDownloadWorker extends Worker {
                             File outputFile = new File(context.getFilesDir() + fileName);
                             if (!outputFile.exists()) {
                                 outputFile.createNewFile();
-                                if (outputFile.exists())
-                                {
-                                    Log.i(TAG, "downloadInstaPost: file created");
-                                }
+//                                if (outputFile.exists())
+//                                {
+//                                    Log.i(TAG, "downloadInstaPost: file created");
+//                                }
                             }
 
 
@@ -357,6 +369,11 @@ public class InstaDownloadWorker extends Worker {
                                 InstaLink link = instaLinkList.get(position);
                                 linkDatabase.getLinkDao().updateLinkDatabase(new InstaLink(link.getUrl(), link.getLinkID(), link.isDownloaded(), link.isQueued(), link.isFailed(), link.getType()));
 
+                                SharedPreferences appDataPref = context.getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
+                                final SharedPreferences.Editor appDataPrefEditor = appDataPref.edit();
+                                int downloadedCount = appDataPref.getInt(Constant.DOWNLOADED_COUNT,0);
+                                appDataPrefEditor.putInt(Constant.DOWNLOADED_COUNT,downloadedCount+1);
+                                appDataPrefEditor.apply();
 
                             }
                             else
@@ -378,10 +395,10 @@ public class InstaDownloadWorker extends Worker {
                             if (!new File(fileName).exists())
                                 new File(fileName).createNewFile();
 
-                            if(new File(fileName).exists())
-                            {
-                                Log.i(TAG, "downloadInstaPost: file created");
-                            }
+//                            if(new File(fileName).exists())
+//                            {
+//                                Log.i(TAG, "downloadInstaPost: file created");
+//                            }
 
                             URL _url = new URL(downloadUrl.trim());
                             HttpURLConnection con = (HttpURLConnection) _url.openConnection();
@@ -427,6 +444,11 @@ public class InstaDownloadWorker extends Worker {
                                 InstaLink link = instaLinkList.get(position);
                                 linkDatabase.getLinkDao().updateLinkDatabase(new InstaLink(link.getUrl(), link.getLinkID(), link.isDownloaded(), link.isQueued(), link.isFailed(),  link.getType()));
 
+                                SharedPreferences appDataPref = context.getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
+                                final SharedPreferences.Editor appDataPrefEditor = appDataPref.edit();
+                                int downloadedCount = appDataPref.getInt(Constant.DOWNLOADED_COUNT,0);
+                                appDataPrefEditor.putInt(Constant.DOWNLOADED_COUNT,downloadedCount+1);
+                                appDataPrefEditor.apply();
 
                             }else
                             {
@@ -441,7 +463,7 @@ public class InstaDownloadWorker extends Worker {
 
                     }
                 } catch (Exception e) {
-                    Log.i(TAG, "instaDownloadWorker" + e);
+//                    Log.i(TAG, "instaDownloadWorker" + e);
                     instaLinkList.get(position).setDownloaded(false);
                     instaLinkList.get(position).setQueued(false);
                     instaLinkList.get(position).setFailed(true);
@@ -452,8 +474,8 @@ public class InstaDownloadWorker extends Worker {
 
 
             } else {
-                Log.i(TAG, "downloadUrl empty");
-                Log.i(TAG, "downloadInstaPost: line 248");
+//                Log.i(TAG, "downloadUrl empty");
+//                Log.i(TAG, "downloadInstaPost: line 248");
                 instaLinkList.get(position).setDownloaded(false);
                 instaLinkList.get(position).setQueued(false);
                 instaLinkList.get(position).setFailed(true);
@@ -465,9 +487,14 @@ public class InstaDownloadWorker extends Worker {
             List<InstaLink> newInstaLinkList = linkDatabase.getLinkDao().getAllLinks();
             int queuedCount = linkDatabase.getLinkDao().getQueuedLinksCount();
             for(InstaLink link:linkDatabase.getLinkDao().getAllLinks())
-                Log.i(TAG, "link: "+link.getUrl()+" failed "+link.isFailed()+" downloaded "+ link.isDownloaded()+" queued "+link.isQueued());
+//                Log.i(TAG, "link: "+link.getUrl()+" failed "+link.isFailed()+" downloaded "+ link.isDownloaded()+" queued "+link.isQueued());
 
             if (queuedCount == 0) {
+
+                SharedPreferences appDataPref = context.getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
+                int downloadedCount = appDataPref.getInt(Constant.DOWNLOADED_COUNT,0);
+//                Log.i(TAG, "total downloaded count: "+downloadedCount);
+
                 new Notification(context).displayInstaDownload(Constant.instaDownloadNotificationID, "Download Complete", "Tap to view contents");
 
                 Intent completeBroadcastIntent =new Intent();

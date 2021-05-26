@@ -175,13 +175,13 @@ public class HttpHandler {
                         int type = item.getInt("media_type");
                         if(type==1)
                         {
-                            String urlType = "image";
+                            String urlType = Constant.GRAPH_IMAGE;
                             String url= item.getJSONObject("image_versions2").getJSONArray("candidates").getJSONObject(0).getString("url");
                             urlList.add(new InstagramDownloadModel(urlType,url));
                         }
                         else if(type==2)
                         {
-                            String urlType = "video";
+                            String urlType = Constant.GRAPH_VIDEO;
                             String url= item.getJSONArray("video_versions").getJSONObject(0).getString("url");
                             urlList.add(new InstagramDownloadModel(urlType,url));
                         }

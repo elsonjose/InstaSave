@@ -46,6 +46,9 @@ public class Constant {
     public static final String INSTAGRAM_POST = "posts";
     public static final String INSTAGRAM_REEL = "reel";
     public static final String INSTAGRAM_STORY = "stories";
+    public static final String DOWNLOADED_COUNT = "downloadedCount";
+    public static final String APP_RATED = "AppRated";
+    public static final String APP_RATING_TIME = "RatingTime";
 
     public static String GRAPH_VIDEO="GraphVideo";
     public static String GRAPH_IMAGE="GraphImage";

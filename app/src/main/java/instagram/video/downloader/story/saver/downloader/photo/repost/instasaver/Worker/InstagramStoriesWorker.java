@@ -31,6 +31,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.HttpHandler;
 
 public class InstagramStoriesWorker extends Worker {
@@ -46,7 +47,7 @@ public class InstagramStoriesWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        Log.i(TAG, "doWork: InstagramStoriesWorker");
+//        Log.i(TAG, "doWork: InstagramStoriesWorker");
         HttpHandler sh = new HttpHandler();
         String baseUrl = "https://i.instagram.com/api/v1/feed/reels_tray/";
         String cookie = context.get().getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COOKIE, "");
@@ -129,7 +130,7 @@ public class InstagramStoriesWorker extends Worker {
                         JSONObject userStoryObj = new JSONObject();
                         userStoryObj.put("stories",storyJsonArray);
 
-                        Log.i(TAG, "doWork: "+userStoryObj.toString());
+//                        Log.i(TAG, "doWork: "+userStoryObj.toString());
 
                         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
                         {
@@ -149,7 +150,7 @@ public class InstagramStoriesWorker extends Worker {
                             writer.close();
                         }
 
-                        Log.i(TAG, "doWork: file written");
+//                        Log.i(TAG, "doWork: file written");
                         Intent broadcastIntent=new Intent();
                         broadcastIntent.setAction("com.refresh.screen");
                         broadcastIntent.putExtra(Constant.BROADCAST_ACTION,Constant.INSTA_STORY_UPDATED);
@@ -159,7 +160,8 @@ public class InstagramStoriesWorker extends Worker {
             }
             catch (Exception e)
             {
-                Log.i(TAG, "doWork: "+e);
+//                Log.i(TAG, "doWork: "+e);
+                FirebaseLogger.logErrorData("InstagramStoriesWorker ",e.toString());
             }
 
         }

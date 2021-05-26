@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="@dimen/dimen16"
+    android:backgroundTint="?attr/backgroundColor"
+    android:layout_marginStart="@dimen/dimen24"
+    android:layout_marginEnd="@dimen/dimen24">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dimen24"
+        android:orientation="vertical"
+        android:background="?attr/backgroundColor">
+
+        <TextView
+            android:id="@+id/dialog_header_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen18"
+            android:text="Exiting Insave"
+            android:textColor="?attr/mediumImportantTextColor"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <TextView
+            android:id="@+id/dialog_message_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen16"
+            android:text="Are you sure you want to exit insave? "
+            android:layout_marginTop="@dimen/dimen12"
+            android:textColor="?lowImportanceTextColor"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/dimen12"
+            android:layout_marginEnd="@dimen/dimen12"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/dimen12">
+
+            <Button
+                android:id="@+id/dialog_yes_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/dimen12"
+                android:layout_marginEnd="@dimen/dimen6"
+                android:text="Yes"
+                android:textColor="@color/white"
+                />
+
+            <Button
+                android:id="@+id/dialog_no_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/dimen6"
+                android:layout_marginEnd="@dimen/dimen12"
+                android:text="No"
+                android:textColor="@color/white"
+                android:elevation="@dimen/dimen6"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
