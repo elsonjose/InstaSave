@@ -120,6 +120,7 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
                     {
                         String errorLoc = "DownloadIGPost";
                         String error = "response model is null for reqUrl "+reqUrl +" org_link "+strings[0];
+                        publishProgress("This story is not visible to you");
                         FirebaseLogger.logErrorData(errorLoc,error);
                     }
                 }
@@ -299,6 +300,7 @@ public class DownloadIGPost extends AsyncTask<String, String, Integer> {
                 }
                 else
                 {
+                    publishProgress("This content is not visible to you");
                     String errorLoc = "DownloadIGPost";
                     String error = "response model is null for reqUrl "+reqUrl +" org_link "+strings[0];
                     FirebaseLogger.logErrorData(errorLoc,error);

@@ -49,6 +49,7 @@ public class Constant {
     public static final String DOWNLOADED_COUNT = "downloadedCount";
     public static final String APP_RATED = "AppRated";
     public static final String APP_RATING_TIME = "RatingTime";
+    public static final String STORY_DIR_UPDATED = "storyDir";
 
     public static String GRAPH_VIDEO="GraphVideo";
     public static String GRAPH_IMAGE="GraphImage";

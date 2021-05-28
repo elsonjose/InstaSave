@@ -66,8 +66,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
@@ -92,12 +96,14 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.InstagramLoginActivity;
@@ -115,6 +121,7 @@ import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.WrapGridLayoutManager;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.ViewHolder.StatusViewHolder;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstaDownloadWorker;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Worker.InstagramStoriesWorker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -172,6 +179,8 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mainActivity=this;
 
         executor = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
@@ -549,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
                     if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
                     {
                         String fileName = "story.txt";
-                        File outputFile = new File(getFilesDir()+fileName);
+                        File outputFile = new File(getFilesDir()+File.separator+fileName);
                         FileInputStream fis = new FileInputStream(outputFile);
                         DataInputStream in = new DataInputStream(fis);
                         BufferedReader br =
@@ -624,6 +633,25 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                catch (FileNotFoundException f)
+                {
+                    SharedPreferences preferences = getSharedPreferences(Constant.THEME_PREF,Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    if(!preferences.contains(Constant.STORY_DIR_UPDATED) && !TextUtils.isEmpty(preferences.getString(Constant.COOKIE,"")))
+                    {
+                        Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
+
+                        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest
+                                .Builder(InstagramStoriesWorker.class, 1, TimeUnit.HOURS)
+                                .addTag(Constant.INSTA_STORY_WORKER_TAG)
+                                .setConstraints(constraints)
+                                .build();
+                        WorkManager.getInstance(MainActivity.this).enqueueUniquePeriodicWork(Constant.INSTA_STORY_WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
+                        editor.putBoolean(Constant.STORY_DIR_UPDATED,true);
+                        editor.apply();
+                        FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ",f.toString());
+                    }
+                }
                 catch (Exception e) {
                     e.printStackTrace();
 //                    Log.i(TAG, "FetchInstagramStories : "+e);
@@ -638,6 +666,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void askToDownloadInstaPost(String textToPaste) {
+
+        if (textToPaste.contains(" ")) {
+            String[] links = textToPaste.split(" ");
+            if (links != null && links.length > 0)
+            {
+                textToPaste=links[0];
+            }
+        }
 
         if (textToPaste.startsWith("https://instagram.com/")) {
             textToPaste = textToPaste.replace("https://instagram.com/", "https://www.instagram.com/");
@@ -1290,14 +1326,12 @@ public class MainActivity extends AppCompatActivity {
         boolean isRated = appDataPref.getBoolean(Constant.APP_RATED,false);
         long isRatingTime = appDataPref.getLong(Constant.APP_RATING_TIME,currentTimeInMillis);
 
-//        Log.i(TAG, "onBackPressed: isRated "+isRated);
-//        Log.i(TAG, "onBackPressed: isRatingTime "+isRatingTime);
-//        Log.i(TAG, "onBackPressed: downloadedCount "+downloadedCount);
+
 
         if (instaAdapter != null && instaAdapter.getSelectedPostCount() > 0) {
             instaAdapter.clearSelection();
         }
-        else if(downloadedCount>0 && !isRated && System.currentTimeMillis()>isRatingTime)
+        else if(downloadedCount>10 && !isRated && System.currentTimeMillis()>isRatingTime)
         {
             Dialog dialog = new Dialog(MainActivity.this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

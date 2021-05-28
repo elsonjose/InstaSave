@@ -26,6 +26,15 @@ public class DownloadInstaActivity extends Activity {
             if (Intent.ACTION_SEND.equals(action) && type.startsWith("text/plain")) {
                 String instaUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (instaUrl != null && !TextUtils.isEmpty(instaUrl) && instaUrl.contains("instagram.com")) {
+
+                    if (instaUrl.contains(" ")) {
+                        String[] links = instaUrl.split(" ");
+                        if (links != null && links.length > 0)
+                        {
+                            instaUrl=links[0];
+                        }
+                    }
+
                     if (instaUrl.startsWith("https://instagram.com/")) {
                         instaUrl = instaUrl.replace("https://instagram.com/", "https://www.instagram.com/");
                     }

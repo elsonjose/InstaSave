@@ -22,6 +22,6 @@ public class FirebaseLogger {
         userLog.put("model", Build.MODEL);
         userLog.put("errorLoc",errorLoc);
         userLog.put("error",e);
-        FirebaseDatabase.getInstance().getReference().child("Crash").child("v6").child(dateformat).push().setValue(userLog);
+        FirebaseDatabase.getInstance().getReference().child("Crash").child("v7").child(dateformat).push().setValue(userLog);
     }
 }

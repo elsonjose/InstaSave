@@ -135,7 +135,7 @@ public class InstagramStoriesWorker extends Worker {
                         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
                         {
                             String fileName = "story.txt";
-                            File outputFile = new File(context.get().getFilesDir()+fileName);
+                            File outputFile = new File(context.get().getFilesDir()+File.separator+fileName);
                             if (!outputFile.exists())
                                 outputFile.createNewFile();
                             FileOutputStream fos = new FileOutputStream(outputFile);
