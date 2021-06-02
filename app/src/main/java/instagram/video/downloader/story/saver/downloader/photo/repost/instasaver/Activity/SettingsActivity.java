@@ -8,21 +8,17 @@ import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -33,8 +29,6 @@ import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.android.play.core.tasks.OnFailureListener;
 import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
-
-import java.util.concurrent.TimeUnit;
 
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.BottomSheet.WebBottomSheetView;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.MainActivity;
@@ -50,6 +44,7 @@ public class SettingsActivity extends AppCompatActivity {
     Toolbar settingsToolbar;
     LinearLayout settingsThemeWrapper;
     TextView sysThemeInfoTextView;
+    ImageButton backBtn;
 
     public void reviewApp(View v)
     {
@@ -141,9 +136,15 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         settingsToolbar = findViewById(R.id.setting_toolbar);
-        setSupportActionBar(settingsToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Settings");
+        backBtn = findViewById(R.id.settings_back_button);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                onBackPressed();
+
+            }
+        });
 
         themeLightSwitch = findViewById(R.id.setting_light_theme_switch);
         themeDarkSwitch = findViewById(R.id.setting_dark_theme_switch);
@@ -239,15 +240,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int menuItemId = item.getItemId();
-        if(menuItemId == android.R.id.home)
-        {
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
 
     private void askReview() {

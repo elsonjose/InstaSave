@@ -85,7 +85,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,notificationBuilder.build());
         }
@@ -96,7 +96,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,builder.build());
         }
@@ -125,7 +125,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,notificationBuilder.build());
         }
@@ -136,7 +136,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,builder.build());
         }
@@ -163,7 +163,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,notificationBuilder.build());
         }
@@ -174,7 +174,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,builder.build());
         }
@@ -201,7 +201,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,notificationBuilder.build());
         }
@@ -212,7 +212,7 @@ public class Notification extends ContextWrapper {
                     .setContentText(desc)
                     .setContentIntent(contentIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setColor(context.get().getColor(R.color.whatsapp_green_dark))
+                    .setColor(context.get().getColor(R.color.white))
                     .setAutoCancel(true);
             notificationManager.notify(notificationID,builder.build());
         }

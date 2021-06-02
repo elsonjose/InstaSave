@@ -148,8 +148,6 @@ public class InstagramLoginActivity extends AppCompatActivity {
         }
 
         toolbar = findViewById(R.id.instagram_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         instagramWrapper = findViewById(R.id.instagram_wrapper);
         loginWebView = findViewById(R.id.webView);
 
@@ -234,18 +232,6 @@ public class InstagramLoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()== android.R.id.home)
-        {
-            onBackPressed();
-            return true;
-        }
-        else
-        {
-            return super.onOptionsItemSelected(item);
-        }
-    }
 
     private void showInstagramWebView() {
 
@@ -303,6 +289,11 @@ public class InstagramLoginActivity extends AppCompatActivity {
             Toast t = Toast.makeText(this, "Cookie empty", Toast.LENGTH_SHORT);
             t.show();
         }
+    }
+
+    public void backBtnClicked(View v)
+    {
+        onBackPressed();
     }
 
     @Override

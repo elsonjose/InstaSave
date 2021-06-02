@@ -13,6 +13,7 @@
         <attr name="normalIconTint" format="color" />
         <attr name="navHeaderColor" format="color" />
         <attr name="settingsHeaderBackgroundColor" format="color" />
+        <attr name="highImportantTextColor" format="color" />
         <attr name="mediumImportantTextColor" format="color" />
         <attr name="lowImportanceTextColor" format="color" />
         <attr name="searchIconTint" format="color" />

@@ -11,8 +11,8 @@ android {
         applicationId "instagram.video.downloader.story.saver.downloader.photo.repost.instasaver"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 7
-        versionName "1.0.7"
+        versionCode 9
+        versionName "1.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -74,6 +74,9 @@ dependencies {
 
     // in app rating
     implementation 'com.google.android.play:core:1.10.0'
+
+
+
 
 }
 

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="whatsapp_green_dark">#1976D2</color>
-    <color name="whatsapp_green">#2196F3</color>
-    <color name="lightGreen">#90CAF9</color>
+    <color name="lightGreen">#E5E5E5</color>
+    <color name="whiteDim">#FCFCFC</color>
     <color name="darkPrimaryDark">#FF000000</color>
-    <color name="lightSettingsHeaderBackgroundColor">#E7E7E7</color>
+    <color name="lightSettingsHeaderBackgroundColor">#F0F0F0</color>
     <color name="colorIcon">#C6C6C6</color>
-    <color name="colorBackground">#F1F1F1</color>
+    <color name="colorBackground">#ffffff</color>
     <color name="darkSettingsHeaderBackgroundColor">#383838</color>
     <color name="darNavBackgroundColor">#727272</color>
     <color name="darkDialogBackground">#1c1c1c</color>
@@ -20,13 +19,16 @@
     <color name="darkBackground">#121212</color>
 
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
     <color name="red">#F73737</color>
     <color name="blackOverlay">#66000000</color>
-    <color name="selectedOverlayColor">#A690CAF9</color>
+    <color name="selectedOverlayColor">#A6A5A5FF</color>
     <color name="statusViewRelativeLayoutWrapper">#0C0C0C</color>
     <color name="semiTransparentColor">#80000000</color>
-
     <color name="quick_preview_backgroundColor">#05463F</color>
 
+
+    <color name="progressTint">#7272FF</color>
+    <color name="accent">#A5A5FF</color>
 
 </resources>

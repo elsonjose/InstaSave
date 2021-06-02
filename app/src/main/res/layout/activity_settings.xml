@@ -9,10 +9,45 @@
     android:background="?attr/backgroundColor"
     android:id="@+id/settings_root_layout">
 
-    <include layout="@layout/main_toolbar"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/setting_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:id="@+id/setting_toolbar"/>
+        android:background="?attr/colorPrimary"
+        app:titleTextColor="?attr/highImportantTextColor"
+        android:elevation="@dimen/dimen12"
+        >
+
+        <ImageButton
+            android:id="@+id/settings_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_arrow"
+            android:tint="?attr/highImportantTextColor"
+            android:background="@android:color/transparent"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:layout_marginStart="@dimen/dimen32"
+            android:textSize="@dimen/dimen20"
+            android:textColor="?attr/highImportantTextColor"
+            android:textStyle="bold"/>
+
+        <ProgressBar
+            android:id="@+id/settings_progressbar"
+            android:layout_width="@dimen/dimen24"
+            android:layout_height="@dimen/dimen24"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/dimen16"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/progressTint"
+            android:visibility="gone"
+            />
+
+    </androidx.appcompat.widget.Toolbar>
 
    <ScrollView
        android:layout_width="match_parent"
@@ -43,7 +78,7 @@
                    android:padding="8dp"
                    android:textStyle="bold"
                    android:background="?attr/settingsHeaderBackgroundColor"
-                   android:textColor="?attr/mediumImportantTextColor"
+                   android:textColor="?attr/highImportantTextColor"
                    />
 
                <com.google.android.material.switchmaterial.SwitchMaterial
@@ -54,7 +89,7 @@
                    android:layout_marginStart="@dimen/dimen12"
                    android:layout_marginEnd="@dimen/dimen12"
                    android:textSize="@dimen/dimen16"
-                   android:textColor="?attr/lowImportanceTextColor"
+                   android:textColor="?attr/mediumImportantTextColor"
                    android:minHeight="@dimen/dimen48"
                    android:padding="@dimen/dimen2"
                    android:layout_marginTop="@dimen/dimen4"
@@ -68,7 +103,7 @@
                    android:layout_marginStart="@dimen/dimen12"
                    android:layout_marginEnd="@dimen/dimen12"
                    android:textSize="@dimen/dimen16"
-                   android:textColor="?attr/lowImportanceTextColor"
+                   android:textColor="?attr/mediumImportantTextColor"
                    android:padding="@dimen/dimen2"
                    />
 
@@ -77,18 +112,18 @@
            <TextView
                android:id="@+id/setting_theme_info_textview"
                android:layout_width="match_parent"
-               android:layout_height="wrap_content"
+               android:layout_height="@dimen/dimen48"
                android:text="@string/sys_theme_policy"
                android:layout_marginStart="@dimen/dimen12"
                android:layout_marginEnd="@dimen/dimen12"
-               android:textSize="@dimen/dimen14"
-               android:textColor="?attr/lowImportanceTextColor"
+               android:textSize="@dimen/dimen16"
+               android:textColor="?attr/mediumImportantTextColor"
                android:paddingTop="@dimen/dimen4"
                android:paddingBottom="@dimen/dimen4"
                android:onClick="viewSysThemePolicy"
                android:paddingStart="@dimen/dimen2"
                android:paddingEnd="@dimen/dimen2"
-               android:visibility="gone"
+               android:gravity="center_vertical"
                />
 
            <TextView
@@ -101,7 +136,7 @@
                android:padding="8dp"
                android:textStyle="bold"
                android:background="?attr/settingsHeaderBackgroundColor"
-               android:textColor="?attr/mediumImportantTextColor"
+               android:textColor="?attr/highImportantTextColor"
                android:layout_marginTop="@dimen/dimen8"
                />
 
@@ -160,7 +195,7 @@
                    android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
                    android:layout_gravity="center_vertical"
-                   android:textColor="?attr/lowImportanceTextColor"
+                   android:textColor="?attr/mediumImportantTextColor"
                    android:onClick="viewTerms"
 
                    />
@@ -195,7 +230,7 @@
                    android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
                    android:layout_gravity="center_vertical"
-                   android:textColor="?attr/lowImportanceTextColor"
+                   android:textColor="?attr/mediumImportantTextColor"
                    android:onClick="viewPolicy"
                    />
 
@@ -222,7 +257,7 @@
                android:padding="8dp"
                android:textStyle="bold"
                android:background="?attr/settingsHeaderBackgroundColor"
-               android:textColor="?attr/mediumImportantTextColor"
+               android:textColor="?attr/highImportantTextColor"
                android:layout_marginTop="@dimen/dimen8"
 
                />
@@ -248,7 +283,7 @@
                    android:text="Rate InstaSave"
                    android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
-                   android:textColor="?attr/lowImportanceTextColor"
+                   android:textColor="?attr/mediumImportantTextColor"
                    android:onClick="reviewApp"
                    android:layout_gravity="center_vertical"
                    />
@@ -285,7 +320,7 @@
                    android:textSize="@dimen/dimen16"
                    android:layout_weight="1"
                    android:layout_gravity="center_vertical"
-                   android:textColor="?attr/lowImportanceTextColor"
+                   android:textColor="?attr/mediumImportantTextColor"
                    android:onClick="sendMail"
                    />
 

@@ -29,8 +29,6 @@
             android:id="@+id/doc_video_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dimen8"
-            android:layout_marginBottom="@dimen/dimen8"
             android:alpha="0.75"
             android:background="@drawable/curved_corners_high"
             android:backgroundTint="?attr/lowImportanceTextColor"

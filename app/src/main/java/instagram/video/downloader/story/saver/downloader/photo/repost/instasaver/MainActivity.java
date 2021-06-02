@@ -32,7 +32,9 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,6 +51,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,8 +83,6 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView instaRecyclerView;
 
     View instaSelectedView;
-    ImageButton instaSelectedViewBackBtn,instaSelectedViewMoreBtn;
+    ImageButton instaSelectedViewBackBtn, instaSelectedViewMoreBtn;
 
     InstaAdapter instaAdapter;
     PopupMenu popup;
@@ -154,12 +155,11 @@ public class MainActivity extends AppCompatActivity {
     static MainActivity mainActivity;
     List<InstagramStoryModel> userStoriesList;
     static final int WRITE_PERMISSION_REQ_CODE = 100;
-    public static FileObserver observer;
+    View mainMessageWrapper;
 
     public static MainActivity getMainActivity() {
         return mainActivity;
     }
-    Snackbar downloadSnackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +180,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainActivity=this;
+        mainActivity = this;
+
+
+        mainMessageWrapper = findViewById(R.id.custom_message_view);
+
 
         executor = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
@@ -194,8 +198,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
         } catch (Exception e) {
-            FirebaseLogger.logErrorData("MainActivity getSupportActionbar ",e.toString());
+            FirebaseLogger.logErrorData("MainActivity getSupportActionbar ", e.toString());
         }
+
         scrollView = findViewById(R.id.insta_frag_scrollView);
         storiesRecyclerViewWrapper = findViewById(R.id.stories_recyclerView_wrapper);
         storiesInfoTextView = findViewById(R.id.stories_info_textView);
@@ -226,6 +231,9 @@ public class MainActivity extends AppCompatActivity {
                     storiesInfoTextView.setVisibility(View.VISIBLE);
                 }
                 loadSavedInstagramContents();
+                if (instaAdapter != null) {
+                    instaAdapter.clearSelection();
+                }
             }
         });
 
@@ -255,8 +263,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(instaAdapter!=null)
-                {
+                if (instaAdapter != null) {
                     instaAdapter.clearSelection();
                 }
 
@@ -273,16 +280,13 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.pop_clear_all:
-                                if(instaAdapter!=null)
-                                {
+                                if (instaAdapter != null) {
                                     instaAdapter.clearSelection();
                                 }
                                 break;
                             case R.id.pop_select_all:
-                                if(instaAdapter!=null)
-                                {
-                                    for(int i=0;i<instaPostList.size();i++)
-                                    {
+                                if (instaAdapter != null) {
+                                    for (int i = 0; i < instaPostList.size(); i++) {
                                         instaPostList.get(i).setSelected(true);
                                     }
                                 }
@@ -295,13 +299,10 @@ public class MainActivity extends AppCompatActivity {
                                 executor.execute(new Runnable() {
                                     @Override
                                     public void run() {
-                                        for(int i=0;i<instaPostList.size();i++)
-                                        {
-                                            if(instaPostList.get(i).isSelected())
-                                            {
+                                        for (int i = 0; i < instaPostList.size(); i++) {
+                                            if (instaPostList.get(i).isSelected()) {
                                                 File file = new File(instaPostList.get(i).getFilePath());
-                                                if(!instaPostList.get(i).isVideo())
-                                                {
+                                                if (!instaPostList.get(i).isVideo()) {
                                                     String[] projection = {MediaStore.Images.Media._ID};
                                                     String selection = MediaStore.Images.Media.DATA + " = ?";
                                                     String[] selectionArgs = new String[]{file.getAbsolutePath()};
@@ -314,9 +315,7 @@ public class MainActivity extends AppCompatActivity {
                                                         Uri deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
                                                         contentResolver.delete(deleteUri, null, null);
                                                     }
-                                                }
-                                                else
-                                                {
+                                                } else {
                                                     String[] projection = {MediaStore.Video.Media._ID};
                                                     String selection = MediaStore.Video.Media.DATA + " = ?";
                                                     String[] selectionArgs = new String[]{file.getAbsolutePath()};
@@ -337,8 +336,7 @@ public class MainActivity extends AppCompatActivity {
                                             @Override
                                             public void run() {
 
-                                                if(instaAdapter!=null)
-                                                {
+                                                if (instaAdapter != null) {
                                                     instaAdapter.clearSelection();
                                                 }
                                                 loadSavedInstagramContents();
@@ -364,8 +362,13 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                                 startActivity(Intent.createChooser(intent, "Sharing via"));
-                                showSnackBarMessage("Preparing for share");
-
+                                showToastMessage("Preparing for share");
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        hideToastMessage();
+                                    }
+                                }, 2500);
                                 break;
 
                         }
@@ -377,7 +380,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        downloadSnackbar = Snackbar.make(findViewById(R.id.root_insta_layout),"Download in progress", BaseTransientBottomBar.LENGTH_INDEFINITE);
         IntentFilter filter = new IntentFilter("com.refresh.screen");
         this.registerReceiver(new ScreenRefreshReceiver(), filter);
 
@@ -388,20 +390,12 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
 
             String action = intent.getExtras().getString(Constant.BROADCAST_ACTION);
-            if (action.equals(Constant.DOWNLOAD_STARTED))
-            {
-                if(!downloadSnackbar.isShown())
-                {
-                    downloadSnackbar.show();
-                }
-            }
-            else if(action.equals(Constant.DOWNLOAD_COMPLETE))
-            {
-                downloadSnackbar.dismiss();
+            if (action.equals(Constant.DOWNLOAD_STARTED)) {
+                showToastMessage("Download in progress");
+            } else if (action.equals(Constant.DOWNLOAD_COMPLETE)) {
                 loadSavedInstagramContents();
-            }
-            else if(action.equals(Constant.INSTA_STORY_UPDATED))
-            {
+                hideToastMessage();
+            } else if (action.equals(Constant.INSTA_STORY_UPDATED)) {
                 FetchInstagramStories();
             }
 
@@ -416,11 +410,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public void scrollToPosition()
-    {
-        if(state!=null && instaRecyclerView!=null)
-        {
+    public void scrollToPosition() {
+        if (state != null && instaRecyclerView != null) {
             instaRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
     }
@@ -438,7 +429,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && instaRecyclerView != null) {
 
             setRecyclerviewPosition();
-           instaRecyclerView.setLayoutManager(new WrapGridLayoutManager(this, 4));
+            instaRecyclerView.setLayoutManager(new WrapGridLayoutManager(this, 4));
             scrollToPosition();
 
 
@@ -449,12 +440,10 @@ public class MainActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 //        Log.i(TAG, "onWindowFocusChanged: ");
-        if(hasFocus)
-        {
+        if (hasFocus) {
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             try {
-                if(clipboard.hasPrimaryClip())
-                {
+                if (clipboard.hasPrimaryClip()) {
                     ClipData clipData = clipboard.getPrimaryClip();
                     String url = clipData.getItemAt(0).getText().toString().trim();
                     if (!getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE).getString(Constant.COPIED_URL, Constant.COPIED_URL).equals(url.replace("https://www.instagram.com/", "")) && url.contains("instagram.com")) {
@@ -467,11 +456,11 @@ public class MainActivity extends AppCompatActivity {
 
                         Button yesBtn = (Button) dialog.findViewById(R.id.dialog_yes_button);
                         Button noBtn = (Button) dialog.findViewById(R.id.dialog_no_button);
-                        TextView headerTextView =  dialog.findViewById(R.id.dialog_header_textView);
-                        TextView messageTextView =  dialog.findViewById(R.id.dialog_message_textView);
+                        TextView headerTextView = dialog.findViewById(R.id.dialog_header_textView);
+                        TextView messageTextView = dialog.findViewById(R.id.dialog_message_textView);
 
                         headerTextView.setText("IG Url Detected");
-                        messageTextView.setText("Download content from "+url);
+                        messageTextView.setText("Download content from " + url);
 
                         yesBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -480,18 +469,14 @@ public class MainActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 try {
                                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                    if(clipboard.hasPrimaryClip())
-                                    {
+                                    if (clipboard.hasPrimaryClip()) {
                                         String textToPaste = clipboard.getPrimaryClip().getItemAt(0).getText().toString().trim();
-                                        if (clipboard.getPrimaryClip().getItemCount() > 0 && !TextUtils.isEmpty(textToPaste) && textToPaste.contains("instagram.com/"))
-                                        {
+                                        if (clipboard.getPrimaryClip().getItemCount() > 0 && !TextUtils.isEmpty(textToPaste) && textToPaste.contains("instagram.com/")) {
                                             ClipData clipData = ClipData.newPlainText("", "");
                                             clipboard.setPrimaryClip(clipData);
                                         }
                                     }
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
 //                                    Log.i(TAG, "onPostExecute: "+e);
 
                                 }
@@ -507,25 +492,20 @@ public class MainActivity extends AppCompatActivity {
 
                                 try {
                                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                    if(clipboard.hasPrimaryClip())
-                                    {
+                                    if (clipboard.hasPrimaryClip()) {
                                         String textToPaste = clipboard.getPrimaryClip().getItemAt(0).getText().toString().trim();
-                                        if (clipboard.getPrimaryClip().getItemCount() > 0 && !TextUtils.isEmpty(textToPaste) && textToPaste.contains("instagram.com/"))
-                                        {
+                                        if (clipboard.getPrimaryClip().getItemCount() > 0 && !TextUtils.isEmpty(textToPaste) && textToPaste.contains("instagram.com/")) {
                                             ClipData clipData = ClipData.newPlainText("", "");
                                             clipboard.setPrimaryClip(clipData);
                                         }
                                     }
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
 //                                    Log.i(TAG, "onPostExecute: "+e);
                                 }
 
                             }
                         });
-                        if(!dialog.isShowing())
-                        {
+                        if (!dialog.isShowing()) {
                             dialog.show();
                         }
 //                    Log.i(TAG, "onWindowFocusChanged: "+url);
@@ -534,14 +514,13 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
 //                Log.i(TAG, "onWindowFocusChanged: " + e);
-                FirebaseLogger.logErrorData("MainActivity onWindowFocusChanged ",e.toString());
+                FirebaseLogger.logErrorData("MainActivity onWindowFocusChanged ", e.toString());
             }
         }
     }
 
 
-    public void FetchInstagramStories()
-    {
+    public void FetchInstagramStories() {
 //        Log.i(TAG, "FetchInstagramStories: func called");
         storiesProgressbar.setVisibility(View.VISIBLE);
         storiesInfoTextView.setText("Fetching your stories");
@@ -555,10 +534,9 @@ public class MainActivity extends AppCompatActivity {
                 String data = "";
                 try {
 
-                    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
-                    {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         String fileName = "story.txt";
-                        File outputFile = new File(getFilesDir()+File.separator+fileName);
+                        File outputFile = new File(getFilesDir() + File.separator + fileName);
                         FileInputStream fis = new FileInputStream(outputFile);
                         DataInputStream in = new DataInputStream(fis);
                         BufferedReader br =
@@ -568,9 +546,7 @@ public class MainActivity extends AppCompatActivity {
                             data = data + strLine;
                         }
                         in.close();
-                    }
-                    else
-                    {
+                    } else {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("story.txt")));
                         StringBuilder builder = new StringBuilder();
                         String line = "";
@@ -581,27 +557,24 @@ public class MainActivity extends AppCompatActivity {
                         data = builder.toString();
                     }
 //                    Log.i(TAG, "FetchInstagramStories: data "+data);
-                    if(!TextUtils.isEmpty(data))
-                    {
+                    if (!TextUtils.isEmpty(data)) {
                         JSONObject stories = new JSONObject(data);
                         JSONArray storiesList = stories.getJSONArray("stories");
-                        for(int i=0;i<storiesList.length();i++)
-                        {   List<InstagramDownloadModel> storyList = new ArrayList<>();
+                        for (int i = 0; i < storiesList.length(); i++) {
+                            List<InstagramDownloadModel> storyList = new ArrayList<>();
                             String name = storiesList.getJSONObject(i).getString("name");
                             String dp = storiesList.getJSONObject(i).getString("dp");
                             String uid = storiesList.getJSONObject(i).getString("uid");
                             JSONArray userStoryList = storiesList.getJSONObject(i).getJSONArray("stories");
-                            for(int j=0;j<userStoryList.length();j++)
-                            {
+                            for (int j = 0; j < userStoryList.length(); j++) {
                                 String type = userStoryList.getJSONObject(j).getString("type");
                                 String url = userStoryList.getJSONObject(j).getString("url");
                                 long time = userStoryList.getJSONObject(j).getLong("expire_at");
-                                if(time<(System.currentTimeMillis()/1000))
-                                {
-                                    storyList.add(new InstagramDownloadModel(type,url,time));
+                                if (time < (System.currentTimeMillis() / 1000)) {
+                                    storyList.add(new InstagramDownloadModel(type, url, time));
                                 }
                             }
-                            userStoriesList.add(new InstagramStoryModel(name,dp,uid,storyList));
+                            userStoriesList.add(new InstagramStoryModel(name, dp, uid, storyList));
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -632,13 +605,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                }
-                catch (FileNotFoundException f)
-                {
-                    SharedPreferences preferences = getSharedPreferences(Constant.THEME_PREF,Context.MODE_PRIVATE);
+                } catch (FileNotFoundException f) {
+                    SharedPreferences preferences = getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
-                    if(!preferences.contains(Constant.STORY_DIR_UPDATED) && !TextUtils.isEmpty(preferences.getString(Constant.COOKIE,"")))
-                    {
+                    if (!preferences.contains(Constant.STORY_DIR_UPDATED) && !TextUtils.isEmpty(preferences.getString(Constant.COOKIE, ""))) {
                         Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
 
                         PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest
@@ -647,15 +617,14 @@ public class MainActivity extends AppCompatActivity {
                                 .setConstraints(constraints)
                                 .build();
                         WorkManager.getInstance(MainActivity.this).enqueueUniquePeriodicWork(Constant.INSTA_STORY_WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
-                        editor.putBoolean(Constant.STORY_DIR_UPDATED,true);
+                        editor.putBoolean(Constant.STORY_DIR_UPDATED, true);
                         editor.apply();
-                        FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ",f.toString());
+                        FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ", f.toString());
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
 //                    Log.i(TAG, "FetchInstagramStories : "+e);
-                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ",e.toString());
+                    FirebaseLogger.logErrorData("MainActivity FetchInstagramStories exception ", e.toString());
                 }
 
             }
@@ -669,9 +638,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (textToPaste.contains(" ")) {
             String[] links = textToPaste.split(" ");
-            if (links != null && links.length > 0)
-            {
-                textToPaste=links[0];
+            if (links != null && links.length > 0) {
+                textToPaste = links[0];
             }
         }
 
@@ -691,27 +659,20 @@ public class MainActivity extends AppCompatActivity {
         instaAdapter = new InstaAdapter(instaPostList);
         instaRecyclerView.setAdapter(instaAdapter);
 
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
                 getDownloadedInstaContent();
-            }
-            else
-            {
+            } else {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQ_CODE);
 
             }
-        }
-        else
-        {
+        } else {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
 //                https://www.instagram.com/p/CPKlT9ppChK/?utm_source=ig_web_copy_link
                 getDownloadedInstaContent();
-            }
-            else
-            {
+            } else {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQ_CODE);
 
             }
@@ -726,8 +687,14 @@ public class MainActivity extends AppCompatActivity {
             case WRITE_PERMISSION_REQ_CODE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     loadSavedInstagramContents();
-                } else if(grantResults.length > 0){
-                    Toast.makeText(MainActivity.this, "Permissions required", Toast.LENGTH_SHORT).show();
+                } else if (grantResults.length > 0) {
+                    showToastMessage("Permission required");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideToastMessage();
+                        }
+                    }, 2500);
                 }
             }
         }
@@ -754,13 +721,12 @@ public class MainActivity extends AppCompatActivity {
                 String sortOrder = MediaStore.Video.Media.DATE_ADDED + " ASC";
                 String selectionArgs = "Instagram_content_%";
 
-                try
-                {
+                try {
                     Cursor cursor = getContentResolver().query(
                             MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                             projection,
                             MediaStore.Video.Media.DISPLAY_NAME + " LIKE ?",
-                            new String[] {selectionArgs},
+                            new String[]{selectionArgs},
                             sortOrder);
                     // Cache column indices.
                     int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
@@ -782,15 +748,15 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             addedTime = Long.parseLong(dateAdded);
 //                            Log.i(TAG, "run: "+addedTime);
-                        }
-                        catch (Exception e)
-                        {
-                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove video data timeparseing",e.toString());
+                        } catch (Exception e) {
+                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove video data timeparseing", e.toString());
 //                            Log.i(TAG, "run: "+e);
                         }
 
 //                        Log.i(TAG, "loadInstaPosts: "+ contentUri+" "+ name+" "+ size+" "+dateAdded+" "+filePath);
-                        instaPostList.add(new Status(filePath,addedTime,false,name.contains(".mp4")));
+                        if (!alreadyContains(instaPostList, filePath)) {
+                            instaPostList.add(new Status(filePath, addedTime, false, name.contains(".mp4")));
+                        }
 
                     }
 
@@ -798,7 +764,7 @@ public class MainActivity extends AppCompatActivity {
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                             projection,
                             MediaStore.Video.Media.DISPLAY_NAME + " LIKE ?",
-                            new String[] {selectionArgs},
+                            new String[]{selectionArgs},
                             sortOrder);
                     while (cursor_image.moveToNext()) {
                         long id = cursor_image.getLong(idColumn);
@@ -812,23 +778,20 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             addedTime = Long.parseLong(dateAdded);
 //                            Log.i(TAG, "run: "+addedTime);
-                        }
-                        catch (Exception e)
-                        {
-                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove image data timeparsing",e.toString());
+                        } catch (Exception e) {
+                            FirebaseLogger.logErrorData("MainActivity getInstaPostsApi29AndAbove image data timeparsing", e.toString());
 //                            Log.i(TAG, "run: "+e);
                         }
 
-                        instaPostList.add(new Status(filePath,addedTime,false,name.contains(".mp4")));
-
+                        if (!alreadyContains(instaPostList, filePath)) {
+                            instaPostList.add(new Status(filePath, addedTime, false, name.contains(".mp4")));
+                        }
 
                     }
                     Collections.sort(instaPostList);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
 //                    Log.i(TAG, "getInstaPostsApi29AndAbove: "+e);
-                    FirebaseLogger.logErrorData("MainActivity getDownloadedInstaContent ",e.toString());
+                    FirebaseLogger.logErrorData("MainActivity getDownloadedInstaContent ", e.toString());
                 }
 
 
@@ -859,10 +822,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean alreadyContains(List<Status> instaPostList, String filePath) {
 
-        for(int i=0;i<instaPostList.size();i++)
-        {
-            if(instaPostList.get(i).getFilePath().equals(filePath))
-            {
+        for (int i = 0; i < instaPostList.size(); i++) {
+            if (instaPostList.get(i).getFilePath().equals(filePath)) {
                 return true;
             }
         }
@@ -874,6 +835,7 @@ public class MainActivity extends AppCompatActivity {
     public class InstaStoriesAdapter extends RecyclerView.Adapter<InstaStoriesAdapter.InstaStoryViewHolder> {
         List<InstagramStoryModel> storyModelList = new ArrayList<>();
         AnimationDrawable anim;
+
         public InstaStoriesAdapter(List<InstagramStoryModel> storyModelList) {
             this.storyModelList = storyModelList;
         }
@@ -888,9 +850,6 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull InstaStoriesAdapter.InstaStoryViewHolder holder, int position) {
 
             holder.storyProgressbar.setVisibility(View.VISIBLE);
-
-
-
 
 
             Glide.with(MainActivity.this).load(storyModelList.get(position).getProfileUrl())
@@ -914,31 +873,25 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-                    if(storyModelList.get(position).getStoryList().size()>0)
-                    {
+                    if (storyModelList.get(position).getStoryList().size() > 0) {
                         executor.execute(new Runnable() {
                             @Override
                             public void run() {
                                 LinkDatabase linkDatabase = Room.databaseBuilder(MainActivity.this, LinkDatabase.class, Constant.LINK_DB).fallbackToDestructiveMigration().build();
                                 List<InstagramDownloadModel> modelList = storyModelList.get(position).getStoryList();
-                                for(int i=0;i<modelList.size();i++)
-                                {
-                                    if(!linkDatabase.getLinkDao().checkInstaLinkExists(modelList.get(i).getUrl()))
-                                    {
-                                        linkDatabase.getLinkDao().addLink(new InstaLink(modelList.get(i).getUrl(), 0,false,true,false,modelList.get(i).getType()));
+                                for (int i = 0; i < modelList.size(); i++) {
+                                    if (!linkDatabase.getLinkDao().checkInstaLinkExists(modelList.get(i).getUrl())) {
+                                        linkDatabase.getLinkDao().addLink(new InstaLink(modelList.get(i).getUrl(), 0, false, true, false, modelList.get(i).getType()));
                                     }
                                 }
-                                if(new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.ENQUEUED && new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.RUNNING)
-                                {
-                                    OneTimeWorkRequest downloadWork  = new OneTimeWorkRequest.Builder(InstaDownloadWorker.class).build();
-                                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_DOWNLOAD_WORKER_TAG, ExistingWorkPolicy.KEEP,downloadWork).enqueue();
+                                if (new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.ENQUEUED && new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.RUNNING) {
+                                    OneTimeWorkRequest downloadWork = new OneTimeWorkRequest.Builder(InstaDownloadWorker.class).build();
+                                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_DOWNLOAD_WORKER_TAG, ExistingWorkPolicy.KEEP, downloadWork).enqueue();
                                 }
                             }
                         });
-                    }
-                    else
-                    {
-                        String reqUrl = "https://i.instagram.com/api/v1/feed/user/"+storyModelList.get(position).getUid()+"/reel_media/";
+                    } else {
+                        String reqUrl = "https://i.instagram.com/api/v1/feed/user/" + storyModelList.get(position).getUid() + "/reel_media/";
                         new DownloadIGPost(MainActivity.this).execute(reqUrl);
                     }
                 }
@@ -1079,7 +1032,6 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-
             holder.statusIsVideoImageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1190,68 +1142,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        public void circleReveal(View viewID, int posFromRight, boolean containsOverflow, final boolean isShow) {
-            final View myView = viewID;
-
-            int width = myView.getWidth();
-//
-//        if(posFromRight>0)
-//            width=width-(getResources().getDimensionPixelSize(R.dimen.abc_action_button_min_width_material)/ 2);
-            if (containsOverflow)
-                width -= (getResources().getDimensionPixelSize(R.dimen.abc_action_button_min_width_overflow_material) / 2);
-
-            int cx = width;
-            int cy = myView.getHeight() / 2;
-
-            Animator anim;
-            if (isShow)
-                anim = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, (float) width);
-            else {
-                anim = ViewAnimationUtils.createCircularReveal(myView, cx, cy, (float) width, 0);
-            }
-
-            anim.setDuration((long) 220);
-
-            // make the view invisible when the animation is done
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (!isShow) {
-                        super.onAnimationEnd(animation);
-                        myView.setVisibility(View.GONE);
-                        try {
-                            mainToolbar.setVisibility(View.VISIBLE);
-                        }
-                        catch (Exception e)
-                        {
-                            FirebaseLogger.logErrorData("MainActivity circleReveal setting toolbar visibility",e.toString());
-//                            Log.i(TAG, "onAnimationEnd: "+e);
-                        }
-                    }
-                    else
-                    {
-                        try {
-                            mainToolbar.setVisibility(View.INVISIBLE);
-                        }
-                        catch (Exception e)
-                        {
-                            FirebaseLogger.logErrorData("MainActivity circleReveal hiding toolbar visibility",e.toString());
-//                            Log.i(TAG, "onAnimationEnd: "+e);
-                        }
-                    }
-                }
-            });
-
-            // make the view visible and start the animation
-            if (isShow)
-                myView.setVisibility(View.VISIBLE);
-
-            // start the animation
-            anim.start();
-
-
-        }
-
         public List<Status> getSelectedPosts() {
             List<Status> myStatus = new ArrayList<>();
             for (int i = 0; i < postList.size(); i++) {
@@ -1284,7 +1174,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
 //                Log.i(TAG, "clearSelection: " + e);
-                FirebaseLogger.logErrorData("MainActivity clearSelection ",e.toString());
+                FirebaseLogger.logErrorData("MainActivity clearSelection ", e.toString());
             }
             if (popup != null) {
                 popup.dismiss();
@@ -1293,16 +1183,139 @@ public class MainActivity extends AppCompatActivity {
             isMultipleSelectionEnabled = false;
         }
 
+
         @Override
         public int getItemCount() {
             return postList.size();
         }
     }
 
-    private void showSnackBarMessage(String message) {
-        Snackbar.make(findViewById(R.id.root_insta_layout), message, BaseTransientBottomBar.LENGTH_LONG).show();
+    public void circleReveal(View viewID, int posFromRight, boolean containsOverflow, final boolean isShow) {
+        final View myView = viewID;
+
+        int width = myView.getWidth();
+//
+//        if(posFromRight>0)
+//            width=width-(getResources().getDimensionPixelSize(R.dimen.abc_action_button_min_width_material)/ 2);
+        if (containsOverflow)
+            width -= (getResources().getDimensionPixelSize(R.dimen.abc_action_button_min_width_overflow_material) / 2);
+
+        int cx = width;
+        int cy = myView.getHeight();
+
+        Animator anim;
+        if (isShow)
+            anim = ViewAnimationUtils.createCircularReveal(myView, cx / 2, cy, 0, (float) width);
+        else {
+            anim = ViewAnimationUtils.createCircularReveal(myView, cx / 2, cy, (float) width, 0);
+        }
+
+        anim.setDuration((long) 220);
+
+        // make the view invisible when the animation is done
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (!isShow) {
+                    super.onAnimationEnd(animation);
+                    myView.setVisibility(View.GONE);
+                    try {
+                        Window window = getWindow();
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+                        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                            window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.darkPrimary));
+                        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                            window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.white));
+                        }
+                        mainToolbar.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        FirebaseLogger.logErrorData("MainActivity circleReveal setting toolbar visibility and setting status bar color", e.toString());
+//                            Log.i(TAG, "onAnimationEnd: "+e);
+                    }
+                } else {
+                    try {
+                        mainToolbar.setVisibility(View.INVISIBLE);
+                        Window window = getWindow();
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+                        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+                        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                            window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.darNavBackgroundColor));
+                        } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                            window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.accent));
+                        }
+
+                    } catch (Exception e) {
+                        FirebaseLogger.logErrorData("MainActivity circleReveal hiding toolbar visibility and setting status bar color", e.toString());
+//                            Log.i(TAG, "onAnimationEnd: "+e);
+                    }
+                }
+            }
+        });
+
+        // make the view visible and start the animation
+        if (isShow)
+            myView.setVisibility(View.VISIBLE);
+
+        // start the animation
+        anim.start();
+
+
     }
 
+    private void showToastMessage(String message) {
+
+        mainMessageWrapper.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, android.R.anim.fade_in));
+        mainMessageWrapper.getAnimation().start();
+        mainMessageWrapper.setVisibility(View.VISIBLE);
+        try {
+            mainToolbar.setVisibility(View.INVISIBLE);
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+            int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.darNavBackgroundColor));
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.accent));
+            }
+        } catch (Exception e) {
+            FirebaseLogger.logErrorData("Custom Message on showToastMessage", e.toString());
+            Log.i(TAG, "showToastMessage: " + e);
+        }
+        TextView mainMessageTextView = mainMessageWrapper.findViewById(R.id.main_message_textView);
+        mainMessageTextView.setText(message);
+    }
+
+    public void hideToastMessage() {
+
+        mainMessageWrapper.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, android.R.anim.fade_out));
+        mainMessageWrapper.getAnimation().start();
+        mainMessageWrapper.setVisibility(View.GONE);
+        try {
+            if (instaAdapter != null && instaAdapter.getSelectedPostCount() == 0) {
+                Window window = getWindow();
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+                int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                    window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.darkPrimary));
+                } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                    window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.white));
+                }
+
+            }
+            mainToolbar.setVisibility(View.VISIBLE);
+        } catch (Exception e) {
+            FirebaseLogger.logErrorData("Custom Message on showToastMessage", e.toString());
+            Log.i(TAG, "showToastMessage: " + e);
+        }
+    }
 
 
     @Override
@@ -1319,20 +1332,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        long currentTimeInMillis = System.currentTimeMillis()-(60*1000);
+        long currentTimeInMillis = System.currentTimeMillis() - (60 * 1000);
         SharedPreferences appDataPref = getSharedPreferences(Constant.THEME_PREF, Context.MODE_PRIVATE);
         final SharedPreferences.Editor appDataPrefEditor = appDataPref.edit();
-        int downloadedCount = appDataPref.getInt(Constant.DOWNLOADED_COUNT,0);
-        boolean isRated = appDataPref.getBoolean(Constant.APP_RATED,false);
-        long isRatingTime = appDataPref.getLong(Constant.APP_RATING_TIME,currentTimeInMillis);
-
+        int downloadedCount = appDataPref.getInt(Constant.DOWNLOADED_COUNT, 0);
+        boolean isRated = appDataPref.getBoolean(Constant.APP_RATED, false);
+        long isRatingTime = appDataPref.getLong(Constant.APP_RATING_TIME, currentTimeInMillis);
 
 
         if (instaAdapter != null && instaAdapter.getSelectedPostCount() > 0) {
             instaAdapter.clearSelection();
-        }
-        else if(downloadedCount>10 && !isRated && System.currentTimeMillis()>isRatingTime)
-        {
+        } else if (downloadedCount > 10 && !isRated && System.currentTimeMillis() > isRatingTime) {
             Dialog dialog = new Dialog(MainActivity.this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -1341,11 +1351,11 @@ public class MainActivity extends AppCompatActivity {
 
             Button yesBtn = (Button) dialog.findViewById(R.id.dialog_yes_button);
             Button noBtn = (Button) dialog.findViewById(R.id.dialog_no_button);
-            TextView headerTextView =  dialog.findViewById(R.id.dialog_header_textView);
-            TextView messageTextView =  dialog.findViewById(R.id.dialog_message_textView);
+            TextView headerTextView = dialog.findViewById(R.id.dialog_header_textView);
+            TextView messageTextView = dialog.findViewById(R.id.dialog_message_textView);
 
             headerTextView.setText("Rate InstaSave");
-            messageTextView.setText("We have helped you with "+downloadedCount+" download(s). If you enjoyed it, please rate us 5 stars!!! \n\uD83C\uDF1F \uD83D\uDE07 \uD83C\uDF1F");
+            messageTextView.setText("We have helped you with " + downloadedCount + " download(s). If you enjoyed it, please rate us 5 stars!!! \n\uD83C\uDF1F \uD83D\uDE07 \uD83C\uDF1F");
 
             yesBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1354,31 +1364,38 @@ public class MainActivity extends AppCompatActivity {
 
                     dialog.dismiss();
                     ReviewManager manager = ReviewManagerFactory.create(MainActivity.this);
-                    Task<ReviewInfo> req =  manager.requestReviewFlow();
+                    Task<ReviewInfo> req = manager.requestReviewFlow();
                     req.addOnSuccessListener(new OnSuccessListener<ReviewInfo>() {
                         @Override
                         public void onSuccess(ReviewInfo result) {
 
-                            Task<Void> flow = manager.launchReviewFlow(MainActivity.this,result);
+                            Task<Void> flow = manager.launchReviewFlow(MainActivity.this, result);
                             flow.addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
 
-                                    appDataPrefEditor.putBoolean(Constant.APP_RATED,true);
+                                    appDataPrefEditor.putBoolean(Constant.APP_RATED, true);
                                     appDataPrefEditor.apply();
                                 }
                             });
 
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(Exception e) {
 
-                            Toast.makeText(MainActivity.this, "Cannot rate InstaSave now", Toast.LENGTH_SHORT).show();
 
-                        }
-                    });
+                                    showToastMessage("Cannot rate InstaSave now");
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            hideToastMessage();
+                                        }
+                                    }, 2500);
+
+                                }
+                            });
 
                 }
             });
@@ -1387,7 +1404,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    appDataPrefEditor.putLong(Constant.APP_RATING_TIME,System.currentTimeMillis()+(5*24*60*60*1000));
+                    appDataPrefEditor.putLong(Constant.APP_RATING_TIME, System.currentTimeMillis() + (5 * 24 * 60 * 60 * 1000));
                     appDataPrefEditor.apply();
                     finish();
                     dialog.dismiss();
@@ -1398,26 +1415,27 @@ public class MainActivity extends AppCompatActivity {
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog.show();
-        }
-        else if(scrollView.getScrollY()!=0)
-        {
+        } else if (scrollView.getScrollY() != 0) {
             scrollView.setScrollY(0);
-        }
-        else {
+        } else {
 
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
-            }
-            else
-            {
+            } else {
                 doubleBackToExitPressedOnce = true;
-                Toast.makeText(this, "Tap back again to exit", Toast.LENGTH_SHORT).show();
+                showToastMessage("Tap back now to exit");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideToastMessage();
+                    }
+                }, 2500);
 
                 new Handler().postDelayed(new Runnable() {
 
                     @Override
                     public void run() {
-                        doubleBackToExitPressedOnce=false;
+                        doubleBackToExitPressedOnce = false;
                     }
                 }, 3000);
             }

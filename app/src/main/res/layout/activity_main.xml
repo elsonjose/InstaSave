@@ -17,8 +17,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="?attr/colorPrimary"
         android:layout_weight="1"
-        app:titleTextColor="@color/white"
+        app:titleTextColor="?attr/highImportantTextColor"
         app:layout_scrollFlags="scroll|enterAlways"
+        android:elevation="@dimen/dimen12"
         >
     </androidx.appcompat.widget.Toolbar>
 
@@ -30,6 +31,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_toolbar"/>
 
+    <include
+        android:id="@+id/custom_message_view"
+        layout="@layout/custom_message_layout"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_toolbar"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/insta_frag_swipe_refresh_layout"
@@ -89,12 +97,15 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:gravity="center"
+                                android:textSize="@dimen/dimen16"
+                                android:textColor="?attr/mediumImportantTextColor"
                                 android:text="Tap here to see your stories anonymously"
                                 android:paddingTop="@dimen/dimen16"
                                 android:paddingBottom="@dimen/dimen16"
                                 android:layout_margin="@dimen/dimen4"
                                 android:backgroundTint="?attr/cardViewBackgroundColor"
-                                android:background="@drawable/curved_corners_light"/>
+                                android:background="@drawable/curved_corners_light"
+                                android:elevation="@dimen/dimen6"/>
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/stories_recyclerView_wrapper"
@@ -116,8 +127,9 @@
                                         android:layout_height="wrap_content"
                                         android:text="Download your stories anonymously"
                                         android:layout_marginStart="@dimen/dimen12"
-                                        android:textColor="?attr/lowImportanceTextColor"
-                                        android:layout_marginTop="@dimen/dimen8"/>
+                                        android:textColor="?attr/highImportantTextColor"
+                                        android:layout_marginTop="@dimen/dimen8"
+                                        android:textSize="@dimen/dimen16"/>
 
                                     <androidx.recyclerview.widget.RecyclerView
                                         android:id="@+id/stories_recyclerView"

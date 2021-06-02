@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/dimen18"
             android:text="Exiting Insave"
-            android:textColor="?attr/mediumImportantTextColor"
+            android:textColor="?attr/highImportantTextColor"
             android:layout_gravity="center_horizontal"
             />
 
@@ -32,7 +32,7 @@
             android:textSize="@dimen/dimen16"
             android:text="Are you sure you want to exit insave? "
             android:layout_marginTop="@dimen/dimen12"
-            android:textColor="?lowImportanceTextColor"
+            android:textColor="?mediumImportantTextColor"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:layout_marginStart="@dimen/dimen12"
@@ -54,6 +54,7 @@
                 android:layout_marginEnd="@dimen/dimen6"
                 android:text="Yes"
                 android:textColor="@color/white"
+                android:backgroundTint="@color/progressTint"
                 />
 
             <Button
@@ -65,6 +66,7 @@
                 android:layout_marginEnd="@dimen/dimen12"
                 android:text="No"
                 android:textColor="@color/white"
+                android:backgroundTint="@color/progressTint"
                 android:elevation="@dimen/dimen6"/>
 
         </LinearLayout>

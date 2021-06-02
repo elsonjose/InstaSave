@@ -14,7 +14,30 @@
         android:background="?attr/colorPrimary"
         app:titleTextColor="@color/white"
         app:layout_scrollFlags="scroll|enterAlways"
+        android:gravity="start"
+        android:elevation="@dimen/dimen12"
         >
+
+        <ImageButton
+            android:id="@+id/login_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_arrow"
+            android:tint="?attr/highImportantTextColor"
+            android:background="@android:color/transparent"
+            android:onClick="backBtnClicked"
+            android:layout_gravity="start"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login To Instagram"
+            android:layout_marginStart="@dimen/dimen32"
+            android:textSize="@dimen/dimen20"
+            android:textColor="?attr/highImportantTextColor"
+            android:textStyle="bold"/>
+
     </androidx.appcompat.widget.Toolbar>
 
     <WebView
@@ -36,6 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dimen12"
             android:gravity="center_horizontal"
+            android:textColor="?attr/highImportantTextColor"
             android:text="Instagram login is needed to download contents. Login is done securely from the official Instagram page."
             android:textSize="@dimen/dimen16" />
 
@@ -49,6 +73,7 @@
             android:layout_weight="1"
             android:text="Log into instagram"
             android:textColor="@color/white"
+            android:backgroundTint="@color/progressTint"
             android:onClick="logIntoInstagram"/>
 
         <Button
@@ -60,7 +85,9 @@
             android:layout_weight="1"
             android:text="Remove Account"
             android:textColor="@color/white"
-            android:onClick="clearCookies"/>
+            android:onClick="clearCookies"
+            android:backgroundTint="@color/progressTint"
+            />
 
 <!--        <LinearLayout-->
 <!--            android:layout_width="match_parent"-->
