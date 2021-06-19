@@ -2,16 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+<!--    <item-->
+<!--        android:id="@+id/action_bar_unfollower"-->
+<!--        android:icon="@drawable/ic_sad"-->
+<!--        app:showAsAction="always"-->
+<!--        android:title="Unfollowers"/>-->
+
     <item
         android:id="@+id/action_bar_insta"
         android:icon="@drawable/ic_instagram"
         app:showAsAction="always"
-        android:title="Instagram"/>
+        android:title="Instagram Login"/>
 
     <item
         android:id="@+id/action_bar_settings"
         android:icon="@drawable/ic_settings"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="Settings"/>
 
 </menu>

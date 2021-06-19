@@ -1,9 +1,18 @@
 package instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity;
 
+import android.app.RecoverableSecurityException;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -27,6 +36,7 @@ import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.R;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Constant;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.FirebaseLogger;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Utils.Util;
 
 public class StatusViewActivity extends AppCompatActivity {
     private static final String TAG = "StatusViewActivity";
@@ -37,6 +47,8 @@ public class StatusViewActivity extends AppCompatActivity {
     TextView statusInfoTextView;
     ImageButton shareStatusBtn,deleteStatusBtn,backBtn, repostWhatsappBtn, repostInstagramBtn;
     RelativeLayout statusActionWrapper;
+
+    public static final int FILE_DELETE_REQ=103;
 
     Runnable runnable=new Runnable() {
         @Override
@@ -114,17 +126,45 @@ public class StatusViewActivity extends AppCompatActivity {
                 Uri uri = FileProvider.getUriForFile(StatusViewActivity.this, "instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.fileprovider",new File(statusList.get(viewPager.getCurrentItem()).getFilePath()));
                 Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
                 whatsappIntent.setType("text/plain");
-                whatsappIntent.setPackage("com.whatsapp");
                 whatsappIntent.putExtra(Intent.EXTRA_STREAM, uri);
                 whatsappIntent.setType("image/jpeg");
                 whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                try {
-                    startActivity(whatsappIntent);
-                } catch (android.content.ActivityNotFoundException ex) {
-                    FirebaseLogger.logErrorData("StatusViewActivity  repostWhatsappBtn.setOnClickListener",ex.toString());
+                PackageManager manager = getPackageManager();
+                if(new Util(StatusViewActivity.this).isPackageInstalled("com.whatsapp",manager))
+                {
+                    whatsappIntent.setPackage("com.whatsapp");
+                    try {
+                        startActivity(whatsappIntent);
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        FirebaseLogger.logErrorData("StatusViewActivity  repostWhatsappBtn.setOnClickListener",ex.toString());
+                        showActionResult("Whatsapp not installed.");
+                    }
+                }
+                else if(new Util(StatusViewActivity.this).isPackageInstalled("com.whatsapp.w4b",manager))
+                {
+                    whatsappIntent.setPackage("com.whatsapp.w4b");
+                    try {
+                        startActivity(whatsappIntent);
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        FirebaseLogger.logErrorData("StatusViewActivity  repostWhatsappBtn.setOnClickListener",ex.toString());
+                        showActionResult("Whatsapp not installed.");
+                    }
+                }
+                else if(new Util(StatusViewActivity.this).isPackageInstalled("com.gbwhatsapp",manager))
+                {
+                    whatsappIntent.setPackage("com.gbwhatsapp");
+                    try {
+                        startActivity(whatsappIntent);
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        FirebaseLogger.logErrorData("StatusViewActivity  repostWhatsappBtn.setOnClickListener",ex.toString());
+                        showActionResult("Whatsapp not installed.");
+                    }
+                }
+                else
+                {
                     showActionResult("Whatsapp not installed.");
                 }
+
             }
         });
 
@@ -132,11 +172,80 @@ public class StatusViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int currentPos = viewPager.getCurrentItem();
-                if(new File(statusList.get(currentPos).getFilePath()).delete())
+                File file = new File(statusList.get(currentPos).getFilePath());
+                if(file.exists())
                 {
-                    showActionResult("File deleted");
                     try {
+                        if (!statusList.get(currentPos).isVideo()) {
+                            String[] projection = {MediaStore.Images.Media._ID};
+                            String selection = MediaStore.Images.Media.DATA + " = ?";
+                            String[] selectionArgs = new String[]{file.getAbsolutePath()};
+                            // Query for the ID of the media matching the file path
+                            Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                            ContentResolver contentResolver = getContentResolver();
+                            Cursor c = contentResolver.query(queryUri, projection, selection, selectionArgs, null);
+                            if (c.moveToFirst()) {
+                                long id = c.getLong(c.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+                                Uri deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                                try {
+                                    contentResolver.delete(deleteUri, null, null);
+                                }
+                                catch (Exception e)
+                                {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                        if(e instanceof RecoverableSecurityException)
+                                        {
+                                            RecoverableSecurityException exception = (RecoverableSecurityException) e;
+                                            IntentSender intent = exception.getUserAction()
+                                                    .getActionIntent()
+                                                    .getIntentSender();
+                                            try {
+                                                startIntentSenderForResult(intent, FILE_DELETE_REQ, null, 0, 0, 0, null);
+                                            } catch (IntentSender.SendIntentException sendIntentException) {
+                                                sendIntentException.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                }                            }
+                        } else {
+                            String[] projection = {MediaStore.Video.Media._ID};
+                            String selection = MediaStore.Video.Media.DATA + " = ?";
+                            String[] selectionArgs = new String[]{file.getAbsolutePath()};
+                            Uri queryUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                            ContentResolver contentResolver = getContentResolver();
+                            Cursor c = contentResolver.query(queryUri, projection, selection, selectionArgs, null);
+                            if (c.moveToFirst()) {
+                                long id = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
+                                Uri deleteUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
+                                try {
+                                    contentResolver.delete(deleteUri, null, null);
+                                }
+                                catch (Exception e)
+                                {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                        if(e instanceof RecoverableSecurityException)
+                                        {
+                                            RecoverableSecurityException exception = (RecoverableSecurityException) e;
+                                            IntentSender intent = exception.getUserAction()
+                                                    .getActionIntent()
+                                                    .getIntentSender();
+                                            try {
+                                                startIntentSenderForResult(intent, FILE_DELETE_REQ, null, 0, 0, 0, null);
+                                            } catch (IntentSender.SendIntentException sendIntentException) {
+                                                sendIntentException.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                }                            }
+                        }
+                        showActionResult("File deleted");
                         MainActivity.getMainActivity().loadSavedInstagramContents();
+                        statusList.remove(currentPos);
+                        statusViewAdapter.notifyItemRemoved(currentPos);
+                        if(statusList.size()==0)
+                        {
+                            onBackPressed();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -168,7 +277,7 @@ public class StatusViewActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_SEND);
 //                    intent.putExtra(Intent.EXTRA_TEXT, "Shared with Swift. Get your now http://bit.ly/3j8CQFI");
-                    intent.putExtra(Intent.EXTRA_TEXT, "Shared with InstaSave");
+                    intent.putExtra(Intent.EXTRA_TEXT, "Shared with IGet");
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
                     if(statusList.get(currentPos).isVideo())
                     {

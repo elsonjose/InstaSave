@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/user_story_viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/user_story_tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen2"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/dimen12"
+            android:layout_marginEnd="@dimen/dimen12"
+            android:layout_marginTop="@dimen/dimen12"
+            app:tabIndicatorColor="#ffffff"
+            app:tabGravity="fill"
+            app:tabIndicatorHeight="@dimen/dimen4"
+            app:tabMode="fixed"
+            app:tabMaxWidth="500dp"
+            app:tabBackground="@drawable/custom_indicator"
+            android:background="#d9B1B1B1"
+            android:visibility="visible"
+            app:tabPaddingStart="-1dp"
+            app:tabPaddingEnd="-1dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen12"
+            android:layout_marginTop="@dimen/dimen4"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/story_item_profile_imageView"
+                android:layout_width="@dimen/dimen32"
+                android:layout_height="@dimen/dimen32"
+                android:src="@drawable/ic_outline_account_circle"
+                />
+
+            <TextView
+                android:id="@+id/story_item_profile_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="user_name"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:maxLength="50"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/dimen8"/>
+
+            <TextView
+                android:id="@+id/story_item_time_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="time"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                android:maxLines="1"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/dimen8"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -4,6 +4,8 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.app.RecoverableSecurityException;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -12,6 +14,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -108,6 +111,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.InstagramLoginActivity;
+import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.InstagramStoryViewActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.SettingsActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.Activity.StatusViewActivity;
 import instagram.video.downloader.story.saver.downloader.photo.repost.instasaver.AsyncTask.DownloadIGPost;
@@ -154,8 +158,9 @@ public class MainActivity extends AppCompatActivity {
 
     static MainActivity mainActivity;
     List<InstagramStoryModel> userStoriesList;
-    static final int WRITE_PERMISSION_REQ_CODE = 100;
+    static final int WRITE_PERMISSION_REQ_CODE = 100,FILE_DELETE_REQ=101;
     View mainMessageWrapper;
+
 
     public static MainActivity getMainActivity() {
         return mainActivity;
@@ -313,7 +318,26 @@ public class MainActivity extends AppCompatActivity {
                                                     if (c.moveToFirst()) {
                                                         long id = c.getLong(c.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
                                                         Uri deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-                                                        contentResolver.delete(deleteUri, null, null);
+                                                        try {
+                                                            contentResolver.delete(deleteUri, null, null);
+                                                        }
+                                                        catch (Exception e)
+                                                        {
+                                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                                                if(e instanceof RecoverableSecurityException)
+                                                                {
+                                                                    RecoverableSecurityException exception = (RecoverableSecurityException) e;
+                                                                    IntentSender intent = exception.getUserAction()
+                                                                            .getActionIntent()
+                                                                            .getIntentSender();
+                                                                    try {
+                                                                        startIntentSenderForResult(intent, FILE_DELETE_REQ, null, 0, 0, 0, null);
+                                                                    } catch (IntentSender.SendIntentException sendIntentException) {
+                                                                        sendIntentException.printStackTrace();
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 } else {
                                                     String[] projection = {MediaStore.Video.Media._ID};
@@ -325,7 +349,26 @@ public class MainActivity extends AppCompatActivity {
                                                     if (c.moveToFirst()) {
                                                         long id = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
                                                         Uri deleteUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
-                                                        contentResolver.delete(deleteUri, null, null);
+                                                        try {
+                                                            contentResolver.delete(deleteUri, null, null);
+                                                        }
+                                                        catch (Exception e)
+                                                        {
+                                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                                                if(e instanceof RecoverableSecurityException)
+                                                                {
+                                                                    RecoverableSecurityException exception = (RecoverableSecurityException) e;
+                                                                    IntentSender intent = exception.getUserAction()
+                                                                            .getActionIntent()
+                                                                            .getIntentSender();
+                                                                    try {
+                                                                        startIntentSenderForResult(intent, FILE_DELETE_REQ, null, 0, 0, 0, null);
+                                                                    } catch (IntentSender.SendIntentException sendIntentException) {
+                                                                        sendIntentException.printStackTrace();
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -352,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent();
                                 intent.setAction(android.content.Intent.ACTION_SEND_MULTIPLE);
 //                                intent.putExtra(Intent.EXTRA_TEXT, "Shared with Swift. Get your now http://bit.ly/3j8CQFI");
-                                intent.putExtra(Intent.EXTRA_TEXT, "Shared with InstaSave");
+                                intent.putExtra(Intent.EXTRA_TEXT, "Shared with IGet");
                                 intent.setType("*/*");
                                 for (int i = 0; i < instaPostList.size(); i++) {
                                     if (instaPostList.get(i).isSelected()) {
@@ -384,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(new ScreenRefreshReceiver(), filter);
 
     }
+
 
     public class ScreenRefreshReceiver extends BroadcastReceiver {
         @Override
@@ -873,27 +917,35 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-                    if (storyModelList.get(position).getStoryList().size() > 0) {
-                        executor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                LinkDatabase linkDatabase = Room.databaseBuilder(MainActivity.this, LinkDatabase.class, Constant.LINK_DB).fallbackToDestructiveMigration().build();
-                                List<InstagramDownloadModel> modelList = storyModelList.get(position).getStoryList();
-                                for (int i = 0; i < modelList.size(); i++) {
-                                    if (!linkDatabase.getLinkDao().checkInstaLinkExists(modelList.get(i).getUrl())) {
-                                        linkDatabase.getLinkDao().addLink(new InstaLink(modelList.get(i).getUrl(), 0, false, true, false, modelList.get(i).getType()));
-                                    }
-                                }
-                                if (new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.ENQUEUED && new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.RUNNING) {
-                                    OneTimeWorkRequest downloadWork = new OneTimeWorkRequest.Builder(InstaDownloadWorker.class).build();
-                                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_DOWNLOAD_WORKER_TAG, ExistingWorkPolicy.KEEP, downloadWork).enqueue();
-                                }
-                            }
-                        });
-                    } else {
-                        String reqUrl = "https://i.instagram.com/api/v1/feed/user/" + storyModelList.get(position).getUid() + "/reel_media/";
-                        new DownloadIGPost(MainActivity.this).execute(reqUrl);
-                    }
+//                    if (storyModelList.get(position).getStoryList().size() > 0) {
+//                        executor.execute(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                LinkDatabase linkDatabase = Room.databaseBuilder(MainActivity.this, LinkDatabase.class, Constant.LINK_DB).fallbackToDestructiveMigration().build();
+//                                List<InstagramDownloadModel> modelList = storyModelList.get(position).getStoryList();
+//                                for (int i = 0; i < modelList.size(); i++) {
+//                                    if (!linkDatabase.getLinkDao().checkInstaLinkExists(modelList.get(i).getUrl())) {
+//                                        linkDatabase.getLinkDao().addLink(new InstaLink(modelList.get(i).getUrl(), 0, false, true, false, modelList.get(i).getType()));
+//                                    }
+//                                }
+//                                if (new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.ENQUEUED && new Util(MainActivity.this).getStateOfWork(Constant.INSTA_DOWNLOAD_WORKER_TAG) != WorkInfo.State.RUNNING) {
+//                                    OneTimeWorkRequest downloadWork = new OneTimeWorkRequest.Builder(InstaDownloadWorker.class).build();
+//                                    WorkManager.getInstance(MainActivity.this).beginUniqueWork(Constant.INSTA_DOWNLOAD_WORKER_TAG, ExistingWorkPolicy.KEEP, downloadWork).enqueue();
+//                                }
+//                            }
+//                        });
+//                    } else {
+//                        String reqUrl = "https://i.instagram.com/api/v1/feed/user/" + storyModelList.get(position).getUid() + "/reel_media/";
+//                        new DownloadIGPost(MainActivity.this).execute(reqUrl);
+//                    }
+
+                    Intent i = new Intent(MainActivity.this, InstagramStoryViewActivity.class);
+                    i.putParcelableArrayListExtra(Constant.STATUS_PASS_KEY, (ArrayList<? extends Parcelable>) storyModelList);
+                    i.putExtra(Constant.STATUS_PASS_POSITION, position);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    finish();
                 }
             });
 
@@ -1354,7 +1406,7 @@ public class MainActivity extends AppCompatActivity {
             TextView headerTextView = dialog.findViewById(R.id.dialog_header_textView);
             TextView messageTextView = dialog.findViewById(R.id.dialog_message_textView);
 
-            headerTextView.setText("Rate InstaSave");
+            headerTextView.setText("Rate IGet");
             messageTextView.setText("We have helped you with " + downloadedCount + " download(s). If you enjoyed it, please rate us 5 stars!!! \n\uD83C\uDF1F \uD83D\uDE07 \uD83C\uDF1F");
 
             yesBtn.setOnClickListener(new View.OnClickListener() {
@@ -1386,7 +1438,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onFailure(Exception e) {
 
 
-                                    showToastMessage("Cannot rate InstaSave now");
+                                    showToastMessage("Cannot rate IGet now");
                                     new Handler().postDelayed(new Runnable() {
                                         @Override
                                         public void run() {

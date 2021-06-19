@@ -168,7 +168,7 @@ public class InstaDownloadWorker extends Worker {
                                 values.put(MediaStore.Video.Media.DESCRIPTION, "");
                                 values.put(MediaStore.Video.Media.DISPLAY_NAME, fileName);
                                 values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis());
-                                values.put(MediaStore.Files.FileColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES+File.separator+"InstaSave");
+                                values.put(MediaStore.Files.FileColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES+File.separator+"IGet");
                                 values.put(MediaStore.Files.FileColumns.IS_PENDING, true);
                                 Uri uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
                                 ContentResolver cr = context.getContentResolver();
@@ -212,7 +212,7 @@ public class InstaDownloadWorker extends Worker {
                         else
                         {
 
-                            String fileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + File.separator + "InstaSave" + File.separator+ "Instagram_content_" + System.currentTimeMillis() + ".mp4";
+                            String fileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + File.separator + "IGet" + File.separator+ "Instagram_content_" + System.currentTimeMillis() + ".mp4";
                             if (!new File(fileName).getParentFile().exists())
                                 new File(fileName).getParentFile().mkdirs();
                             if (!new File(fileName).exists())
@@ -347,7 +347,7 @@ public class InstaDownloadWorker extends Worker {
                                 values.put(MediaStore.Images.Media.DESCRIPTION, "");
                                 values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
                                 values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
-                                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES+File.separator+"InstaSave");
+                                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES+File.separator+"IGet");
                                 values.put(MediaStore.Images.Media.IS_PENDING, true);
                                 Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                                 ContentResolver cr = context.getContentResolver();
@@ -388,7 +388,7 @@ public class InstaDownloadWorker extends Worker {
                         else
                         {
 
-                            String fileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator+"InstaSave" + File.separator+ "Instagram_content_" + System.currentTimeMillis() + ".jpg";
+                            String fileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator+"IGet" + File.separator+ "Instagram_content_" + System.currentTimeMillis() + ".jpg";
 
                             if (!new File(fileName).getParentFile().exists())
                                 new File(fileName).getParentFile().mkdirs();

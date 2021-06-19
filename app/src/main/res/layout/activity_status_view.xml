@@ -15,9 +15,10 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/status_btn_wrapper"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
@@ -99,7 +100,7 @@
             android:id="@+id/status_info_textView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen48"
-            android:background="?attr/navHeaderColor"
+            android:background="@color/progressTint"
             android:textColor="@color/white"
             android:gravity="center"
             android:text="Action Result"

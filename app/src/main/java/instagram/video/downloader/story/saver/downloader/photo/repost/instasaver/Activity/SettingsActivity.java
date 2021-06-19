@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -58,7 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:"));
             intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"instasaveapp079@gmail.com"});
-            intent.putExtra(Intent.EXTRA_SUBJECT, "InstaSave Feedback");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "IGet Feedback");
             startActivity(intent);
         } catch (android.content.ActivityNotFoundException ex) {
             FirebaseLogger.logErrorData("SettingsActivity sendMail ",ex.toString());
@@ -104,10 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void viewLicense(View v)
     {
-        settingsToolbar.findViewById(R.id.settings_progressbar).setVisibility(View.VISIBLE);
-        WebBottomSheetView privacyWebSheet = new WebBottomSheetView("https://swift-27f65.web.app/license.html",settingsToolbar.findViewById(R.id.settings_progressbar),v);
-        privacyWebSheet.show((FragmentManager) getSupportFragmentManager(),privacyWebSheet.getTag());
-        v.setEnabled(false);
+        startActivity(new Intent(this, OssLicensesMenuActivity.class));
     }
 
     @Override
@@ -264,7 +262,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Exception e) {
 
-                Toast.makeText(SettingsActivity.this, "Cannot rate InstaSave now", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingsActivity.this, "Cannot rate IGet now", Toast.LENGTH_SHORT).show();
 
             }
         });

@@ -43,6 +43,7 @@ public class InstagramStoryModel implements Parcelable {
         return 0;
     }
 
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">InstaSave</string>
+    <string name="app_name">IGet</string>
     <string name="standard_whatsapp_package">com.whatsapp</string>
     <string name="business_whatsap_package">com.whatsapp.w4b</string>
     <string name="gb_whatsap_package">com.gbwhatsapp</string>

@@ -3,6 +3,7 @@ package instagram.video.downloader.story.saver.downloader.photo.repost.instasave
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
@@ -65,6 +66,15 @@ public class Util {
         long time = Long.parseLong(timestamp);
         Date date = new Date(time);
         return DateFormat.format("dd-MMM-yy", date).toString()+", "+DateFormat.format("hh:mm aa", date).toString();
+    }
+
+    public boolean isPackageInstalled(String packageName, PackageManager packageManager) {
+        try {
+            packageManager.getPackageInfo(packageName, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
 }
